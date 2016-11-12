@@ -63,8 +63,6 @@ FLVPosition* flvParse::getItemFLVPosition(QTreeWidgetItem* item)
 
 void flvParse::displayFLVHeader(QTreeWidgetItem* root)
 {
-	QTreeWidget* tree = this->ui.flvStructTree;
-
 	QTreeWidgetItem *header = new QTreeWidgetItem(QStringList("FLV Header"));
 	setItemFLVPosition(header, &flv->header.pos);
 	root->addChild(header);
@@ -98,7 +96,6 @@ void flvParse::displayFLVHeader(QTreeWidgetItem* root)
 
 void flvParse::displayFLVTags(QTreeWidgetItem* root)
 {
-	QTreeWidget* tree = this->ui.flvStructTree;
 	QString strTmp;
 
 	FLVTag* tag = flv->tagList->next;

@@ -133,7 +133,4 @@
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
- <slots>
-  <slot>on_treeView_itemClicked(QTreeWidgetItem*,int)</slot>
- </slots>
 </ui>
