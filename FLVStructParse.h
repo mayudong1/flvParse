@@ -57,7 +57,7 @@ public:
 	FLVObject<unsigned int> dataSize;
 	FLVObject<unsigned int> timestamp;
 	FLVObject<unsigned int> tagSize;
-	struct FLVTag* next;
+    FLVTag* next;
 
 	FLVTag()
 	{

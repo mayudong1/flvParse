@@ -160,7 +160,4 @@ FLVStruct* FLVStructParse::parseFile(char* fileName)
 	Seek(4, flv->data, flv->dataLen, curIndex);
 	ret = parseFlvTags();
 	return flv;
-
-failed:
-	return NULL;
 }
