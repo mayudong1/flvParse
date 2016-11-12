@@ -23,5 +23,4 @@ HEADERS  += flvparse.h\
 
 FORMS    += flvparse.ui
 
-RESOURCES += \
-    flvparse.qrc
+RESOURCES +=
