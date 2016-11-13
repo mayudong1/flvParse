@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         flvparse.cpp\
 		FLVStructParse.cpp\
-		Util.cpp
+		Util.cpp \
+    amf.cpp
 
 HEADERS  += flvparse.h\
 		FLVStructParse.h\
-		Util.h
+		Util.h \
+    amf.h
 
 FORMS    += flvparse.ui
 
