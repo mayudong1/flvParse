@@ -204,6 +204,9 @@ void flvParse::setHighlight(int start, int len)
 	QList<QTextEdit::ExtraSelection> extraSelections;
 	extraSelections.append(selection);
 	edit->setExtraSelections(extraSelections);	
+
+	cur.clearSelection();
+	edit->setTextCursor(cur);
 }
 
 void flvParse::on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column)
