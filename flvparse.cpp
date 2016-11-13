@@ -3,6 +3,7 @@
 #include <qtextedit.h>
 #include <qtreewidget.h>
 #include <qtextcursor.h>
+#include <qfiledialog.h>
 #include <QtGlobal>  
 
 #include "Util.h"
@@ -130,9 +131,9 @@ void flvParse::displayFLVTags(QTreeWidgetItem* root)
 	}
 }
 
-void flvParse::displayFLV()
+void flvParse::displayFLV(QString fileName)
 {
-	flv = parser->parseFile("d:\\ffmpeg\\a.flv");
+	flv = parser->parseFile(fileName.toStdString().c_str());
 	if (flv == NULL)
 		return;
 
@@ -182,7 +183,13 @@ void flvParse::on_openButton_clicked()
 
 void flvParse::on_testButton_clicked()
 {	
-	displayFLV();
+	QFileDialog *dlg = new QFileDialog(this);
+	if (dlg->exec() == QFileDialog::Accepted)
+	{
+		QStringList files = dlg->selectedFiles();
+		QString fileName = files.at(0);		
+		displayFLV(fileName);
+	}
 }
 
 void flvParse::on_test2Button_clicked()

@@ -83,6 +83,24 @@ public:
 		tagList = NULL;
 		data = NULL;
 	}
+	~FLVStruct()
+	{
+		if (data != NULL)
+		{
+			delete[] data;
+			data = NULL;
+		}
+		if (tagList != NULL)
+		{
+			FLVTag* tag = tagList;
+			while (tag)
+			{
+				FLVTag* cur = tag;
+				tag = tag->next;
+				delete cur;
+			}
+		}
+	}
 };
 
 class FLVStructParse
@@ -92,10 +110,10 @@ public:
 	~FLVStructParse();
 
 public:
-	FLVStruct* parseFile(char* fileName);
+	FLVStruct* parseFile(const char* fileName);
 
 private:
-	int LoadFile(char* fileName);
+	int LoadFile(const char* fileName);
 	int parseFlvHeader();
 	int parseFlvTags();
 

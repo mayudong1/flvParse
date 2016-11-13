@@ -13,7 +13,7 @@ public:
 	flvParse(QWidget *parent = 0);
 	~flvParse();
 private:
-	void displayFLV();
+	void displayFLV(QString fileName);
 	void displayHex(unsigned char* pData, int len);
 	void displayFLVHeader(QTreeWidgetItem* root);
 	void displayFLVTags(QTreeWidgetItem* root);

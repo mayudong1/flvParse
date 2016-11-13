@@ -7,7 +7,7 @@ bool ReadByte(char &value, unsigned char* pData, int dataLen, int &curIndex)
 {
 	assert(pData && dataLen>0 && curIndex>=0);
 
-	if (curIndex >= dataLen)
+	if (curIndex + 1 > dataLen)
 		return false;
 
 	value = pData[curIndex++];
@@ -19,7 +19,7 @@ bool ReadUint32(unsigned int &value, unsigned char* pData, int dataLen, int &cur
 {
 	assert(pData && dataLen>0 && curIndex >= 0);
 
-	if (curIndex + 4 >= dataLen)
+	if (curIndex + 4 > dataLen)
 		return false;
 
 	unsigned char* pTmp = pData + curIndex;
@@ -31,7 +31,7 @@ bool ReadUint24(unsigned int &value, unsigned char* pData, int dataLen, int &cur
 {
 	assert(pData && dataLen>0 && curIndex >= 0);
 
-	if (curIndex + 3 >= dataLen)
+	if (curIndex + 3 > dataLen)
 		return false;
 
 	unsigned char* pTmp = pData + curIndex;
@@ -44,7 +44,7 @@ bool Seek(int len, unsigned char* pData, int dataLen, int &curIndex)
 {
 	assert(pData && dataLen>0 && curIndex >= 0);
 
-	if (curIndex + len >= dataLen)
+	if (curIndex + len > dataLen)
 		return false;
 	curIndex += len;
 	return true;

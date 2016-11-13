@@ -5,8 +5,7 @@
 
 FLVStructParse::FLVStructParse()
 {
-	flv = new FLVStruct();
-	flv->tagList = NULL;
+	flv = NULL;
 	curIndex = 0;
 }
 
@@ -15,19 +14,7 @@ FLVStructParse::~FLVStructParse()
 {
 	if (flv)
 	{
-		if (flv->data)
-		{
-			delete[] flv->data;
-			flv->data = NULL;
-		}
-
-		FLVTag* tag = flv->tagList;
-		while (tag)
-		{ 
-			FLVTag* cur = tag;
-			tag = tag->next;
-			delete cur;
-		}
+		delete flv;
 	}
 }
 
@@ -90,39 +77,44 @@ int FLVStructParse::parseFlvTags()
 		char type = 0;
 		if (!ReadByte(type, flv->data, flv->dataLen, curIndex))
 		{
-			return -1;
+			break;
 		}
 		tag->encrypted.value = (type >> 5) & 0x01;
 		tag->type.value = type & 0x1f;
 		if (!ReadUint24(tag->dataSize.value, flv->data, flv->dataLen, curIndex))
 		{
-			return -1;
+			break;
 		}
 		unsigned int timestamp = 0;
 		if (!ReadUint24(timestamp, flv->data, flv->dataLen, curIndex))
 		{
-			return -1;
+			break;
 		}
 		char timestampEx = 0;
 		if (!ReadByte(timestampEx, flv->data, flv->dataLen, curIndex))
 		{
-			return -1;
+			break;
 		}
 		tag->timestamp.value = timestampEx << 24 | timestamp;
 		Seek(3, flv->data, flv->dataLen, curIndex);//streamid always 0
 		Seek(tag->dataSize.value, flv->data, flv->dataLen, curIndex);
 		if (!ReadUint32(tag->tagSize.value, flv->data, flv->dataLen, curIndex))
 		{
-			return -1;
+			break;
 		}
 		tag->pos.len = curIndex - tag->pos.start;
 		p->next = tag;
 		p = p->next;
+
+		if (curIndex >= flv->dataLen)
+		{
+			break;
+		}
 	}
 	return 0;
 }
 
-int FLVStructParse::LoadFile(char* fileName)
+int FLVStructParse::LoadFile(const char* fileName)
 {
 	if (flv == NULL)
 		return -1;
@@ -140,6 +132,8 @@ int FLVStructParse::LoadFile(char* fileName)
 	}
 		
 	fseek(pFile, 0, SEEK_SET);
+	if (flv->data != NULL)
+		delete[] flv->data;
 	flv->data = new unsigned char[flv->dataLen];
 	fread(flv->data, flv->dataLen, 1, pFile);
 	fclose(pFile);
@@ -147,17 +141,26 @@ int FLVStructParse::LoadFile(char* fileName)
 	return 0;
 }
 
-FLVStruct* FLVStructParse::parseFile(char* fileName)
+FLVStruct* FLVStructParse::parseFile(const char* fileName)
 {
-	if (flv == NULL)
+	if (flv != NULL)
+	{
+		delete flv;		
+	}
+	flv = new FLVStruct();
+	curIndex = 0;
+
+	if(LoadFile(fileName) != 0)	
 		return NULL;
 
-	int ret = LoadFile(fileName);
-	if (ret != 0)
+	if (parseFlvHeader() != 0)
+		return NULL;	
+
+	if (!Seek(4, flv->data, flv->dataLen, curIndex))
 		return NULL;
 
-	ret = parseFlvHeader();
-	Seek(4, flv->data, flv->dataLen, curIndex);
-	ret = parseFlvTags();
+	if (parseFlvTags() != 0)
+		return NULL;
+	
 	return flv;
 }
