@@ -49,24 +49,38 @@ public:
 	}
 };
 
-class FLVTag : public BaseStruct
+class FLVTagHeader : public BaseStruct
 {
-public:	
+public:
 	FLVObject<bool> encrypted;
 	FLVObject<int> type;
 	FLVObject<unsigned int> dataSize;
 	FLVObject<unsigned int> timestamp;
 	FLVObject<unsigned int> streamId;
-
-	FLVObject<unsigned int> preTagSize;
-    FLVTag* next;
-
-	FLVTag()
+	FLVTagHeader()
 	{
 		encrypted.value = false;
 		type.value = 0;
 		dataSize.value = 0;
 		timestamp.value = 0;
+		streamId.value = 0;
+	}
+};
+
+class FLVTagBody : public BaseStruct
+{
+
+};
+
+class FLVTag : public BaseStruct
+{
+public:
+	FLVTagHeader header;	
+	FLVTagBody body;
+	FLVObject<unsigned int> preTagSize;
+    FLVTag* next;
+	FLVTag()
+	{	
 		preTagSize.value = 0;
 		next = NULL;
 	}

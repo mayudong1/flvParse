@@ -94,24 +94,24 @@ int FLVStructParse::parseFlvTags()
 	while (1)
 	{
 		FLVTag* tag = new FLVTag;
-		tag->pos.start = curIndex;
-
+		tag->pos.start = curIndex;		
+		tag->header.pos.start = curIndex;
 		FLVPosition pos;
 		char type = 0;
 		if (!ReadByte(type, pos))
 		{
 			break;
 		}
-		tag->encrypted.value = (type >> 5) & 0x01;
-		tag->encrypted.pos = pos;
-		tag->type.value = type & 0x1f;
-		tag->type.pos = pos;
+		tag->header.encrypted.value = (type >> 5) & 0x01;
+		tag->header.encrypted.pos = pos;
+		tag->header.type.value = type & 0x1f;
+		tag->header.type.pos = pos;
 
-		if (!ReadUint24(tag->dataSize.value, pos))
+		if (!ReadUint24(tag->header.dataSize.value, pos))
 		{
 			break;
 		}
-		tag->dataSize.pos = pos;
+		tag->header.dataSize.pos = pos;
 
 		unsigned int timestamp = 0;
 		if (!ReadUint24(timestamp, pos))
@@ -123,28 +123,25 @@ int FLVStructParse::parseFlvTags()
 		{
 			break;
 		}
-		tag->timestamp.value = timestampEx << 24 | timestamp;
+		tag->header.timestamp.value = timestampEx << 24 | timestamp;
 		pos.start -= 3;
 		pos.len += 3;
-		tag->timestamp.pos = pos;
+		tag->header.timestamp.pos = pos;
 		
-		if (!ReadUint24(tag->streamId.value, pos))
+		if (!ReadUint24(tag->header.streamId.value, pos))
 		{
 			break;
 		}
-		tag->streamId.pos = pos;
+		tag->header.streamId.pos = pos;
+		tag->header.pos.len = curIndex - tag->header.pos.start;
 
-		Seek(tag->dataSize.value, pos);
+		Seek(tag->header.dataSize.value, pos);
 
 		if (!ReadUint32(tag->preTagSize.value, pos))
 		{
 			break;
 		}
 		tag->preTagSize.pos = pos;
-		if (tag->dataSize.pos.len == 0)
-		{
-			break;
-		}
 
 		tag->pos.len = curIndex - tag->pos.start;
 		p->next = tag;

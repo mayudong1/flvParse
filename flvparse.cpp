@@ -102,21 +102,30 @@ void flvParse::displayFLVHeader(QTreeWidgetItem* root)
 }
 void flvParse::displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag)
 {
+	QTreeWidgetItem *header = new QTreeWidgetItem(QStringList("Tag Header"));
+	setItemFLVPosition(header, &tag->header.pos);
+	tagItem->addChild(header);
+
 	QString strTmp;
-	strTmp.sprintf("type: %d", tag->type.value);
+	strTmp.sprintf("type: %d", tag->header.type.value);
 	QTreeWidgetItem *type = new QTreeWidgetItem(QStringList(strTmp));
-	setItemFLVPosition(type, &tag->type.pos);
-	tagItem->addChild(type);
+	setItemFLVPosition(type, &tag->header.type.pos);
+	header->addChild(type);
 
-	strTmp.sprintf("data size: %d", tag->dataSize.value);
+	strTmp.sprintf("data size: %d", tag->header.dataSize.value);
 	QTreeWidgetItem *dataSize = new QTreeWidgetItem(QStringList(strTmp));
-	setItemFLVPosition(dataSize, &tag->dataSize.pos);
-	tagItem->addChild(dataSize);
+	setItemFLVPosition(dataSize, &tag->header.dataSize.pos);
+	header->addChild(dataSize);
 
-	strTmp.sprintf("timestamp: %d", tag->timestamp.value);
+	strTmp.sprintf("timestamp: %d", tag->header.timestamp.value);
 	QTreeWidgetItem *timestamp = new QTreeWidgetItem(QStringList(strTmp));
-	setItemFLVPosition(timestamp, &tag->timestamp.pos);
-	tagItem->addChild(timestamp);
+	setItemFLVPosition(timestamp, &tag->header.timestamp.pos);
+	header->addChild(timestamp);
+
+	strTmp.sprintf("stream id: %d", tag->header.streamId.value);
+	QTreeWidgetItem *streamId = new QTreeWidgetItem(QStringList(strTmp));
+	setItemFLVPosition(streamId, &tag->header.streamId.pos);
+	header->addChild(streamId);
 }
 
 void flvParse::displayFLVTags(QTreeWidgetItem* root)
@@ -129,7 +138,7 @@ void flvParse::displayFLVTags(QTreeWidgetItem* root)
 	while (tag != NULL)
 	{
 		QString strTagType("unknown");
-		switch (tag->type.value)
+		switch (tag->header.type.value)
 		{
 		case 8:
 			strTagType.sprintf("Audio Tag%d", audioIndex++);
