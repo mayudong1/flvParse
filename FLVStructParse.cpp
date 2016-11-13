@@ -194,8 +194,9 @@ FLVStruct* FLVStructParse::parseFile(const char* fileName)
 		return NULL;	
 
 	FLVPosition pos;
-	if (!Seek(4, pos))
+	if (!ReadUint32(flv->firstTagSize.value, pos))
 		return NULL;
+	flv->firstTagSize.pos = pos;
 
 	if (parseFlvTags() != 0)
 		return NULL;

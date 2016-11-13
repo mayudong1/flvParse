@@ -93,6 +93,12 @@ void flvParse::displayFLVHeader(QTreeWidgetItem* root)
 	QTreeWidgetItem *headerSize = new QTreeWidgetItem(QStringList(strTmp));
 	setItemFLVPosition(headerSize, &flv->header.headerLen.pos);
 	header->addChild(headerSize);
+
+	strTmp.sprintf("First Tag size: %d", flv->firstTagSize.value);
+	QTreeWidgetItem *firstTagSize = new QTreeWidgetItem(QStringList(strTmp));
+	setItemFLVPosition(firstTagSize, &flv->firstTagSize.pos);
+	root->addChild(firstTagSize);
+
 }
 
 void flvParse::displayFLVTags(QTreeWidgetItem* root)
@@ -164,7 +170,7 @@ void flvParse::setHighlight(int start, int len)
 	selection.format.setBackground(lineColor);
 	QList<QTextEdit::ExtraSelection> extraSelections;
 	extraSelections.append(selection);
-	edit->setExtraSelections(extraSelections);
+	edit->setExtraSelections(extraSelections);	
 }
 
 void flvParse::on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column)
