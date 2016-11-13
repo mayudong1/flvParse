@@ -137,14 +137,13 @@ int FLVStructParse::parseFlvTags()
 
 		Seek(tag->header.dataSize.value, pos);
 		tag->data.pos = pos;
+		tag->pos.len = curIndex - tag->pos.start;
 
 		if (!ReadUint32(tag->preTagSize.value, pos))
 		{
 			break;
 		}
-		tag->preTagSize.pos = pos;
-
-		tag->pos.len = curIndex - tag->pos.start;
+		tag->preTagSize.pos = pos;		
 		p->next = tag;
 		p = p->next;
 
@@ -189,6 +188,7 @@ FLVStruct* FLVStructParse::parseFile(const char* fileName)
 	{
 		delete flv;		
 	}
+
 	flv = new FLVStruct();
 	curIndex = 0;
 

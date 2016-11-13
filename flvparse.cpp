@@ -15,7 +15,8 @@ flvParse::flvParse(QWidget *parent)
 	ui.setupUi(this);
 	flv = NULL;
 	parser = new FLVStructParse();
-	
+	curShowHexDataStartInFLV = 0;
+	curShowHexDataLen = 0;	
 }
 
 flvParse::~flvParse()
@@ -39,12 +40,12 @@ QString convert(unsigned char* pData, int len)
 	return strResult;
 }
 
-void flvParse::displayHex(unsigned char* pData, int len)
+void flvParse::displayHex(unsigned char* pData, int& len)
 {
 	Q_ASSERT(pData && len >= 0);
 
-	int minLen = MYD_MIN(len, 1024);
-	QString str = convert(pData, minLen);
+	len = MYD_MIN(len, 1024);
+	QString str = convert(pData, len);
 	this->ui.hexView->setText(str);
 }
 
@@ -141,7 +142,7 @@ void flvParse::displayFLVTags(QTreeWidgetItem* root)
 	int audioIndex = 0;
 	while (tag != NULL)
 	{
-		QString strTagType("unknown");
+		QString strTagType("Unknown Tag");
 		switch (tag->header.type.value)
 		{
 		case 8:
@@ -171,18 +172,23 @@ void flvParse::displayFLVTags(QTreeWidgetItem* root)
 }
 
 void flvParse::displayFLV(QString fileName)
-{
+{	
+	clearDisplay();
+
 	flv = parser->parseFile(fileName.toStdString().c_str());
 	if (flv == NULL)
+	{		
+		QMessageBox::information(this, "flv parse", "flv struct error");
 		return;
+	}		
 
 	QTreeWidget* tree = this->ui.flvStructTree;
-
 	QTreeWidgetItem *root = new QTreeWidgetItem(QStringList("FLVStruct"));
 	tree->addTopLevelItem(root);
 	root->setExpanded(true);
 
-	displayHex(flv->data, flv->dataLen);
+	curShowHexDataLen = 1024;
+	displayHex(flv->data, curShowHexDataLen);
 	displayFLVHeader(root);
 	displayFLVTags(root);
 }
@@ -206,7 +212,15 @@ void flvParse::setHighlight(int start, int len)
 	edit->setExtraSelections(extraSelections);	
 
 	cur.clearSelection();
+	cur.setPosition(startTextPos);
 	edit->setTextCursor(cur);
+}
+
+void flvParse::clearDisplay()
+{
+	QTreeWidget* tree = this->ui.flvStructTree;
+	tree->clear();
+	this->ui.hexView->clear();
 }
 
 void flvParse::on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column)
@@ -215,7 +229,20 @@ void flvParse::on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column)
 	if (pos == NULL)
 		return;
 			
-	setHighlight(pos->start, pos->len);
+	if (pos->start < curShowHexDataStartInFLV 
+		|| pos->start > curShowHexDataStartInFLV+curShowHexDataLen)
+	{
+		curShowHexDataStartInFLV = pos->start - SHOW_MORE_BYTES_PRE;
+		if (curShowHexDataStartInFLV < 0)
+			curShowHexDataStartInFLV = 0;
+		curShowHexDataLen = pos->len + SHOW_MORE_BYTES_ALL;
+		displayHex(flv->data+curShowHexDataStartInFLV, curShowHexDataLen);
+	}
+	
+	int highlightStart = pos->start - curShowHexDataStartInFLV;
+	int highlightLen = MYD_MIN((curShowHexDataLen-highlightStart), pos->len);
+
+	setHighlight(highlightStart, highlightLen);
 }
 
 void flvParse::on_openButton_clicked()

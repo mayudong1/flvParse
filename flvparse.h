@@ -5,6 +5,10 @@
 #include "ui_flvparse.h"
 #include "FLVStructParse.h"
 
+#define SHOW_MORE_BYTES_PRE 128
+#define SHOW_MORE_BYTES_REAR 1024
+#define SHOW_MORE_BYTES_ALL	SHOW_MORE_BYTES_PRE+SHOW_MORE_BYTES_REAR
+
 class flvParse : public QMainWindow
 {
 	Q_OBJECT
@@ -14,12 +18,13 @@ public:
 	~flvParse();
 private:
 	void displayFLV(QString fileName);
-	void displayHex(unsigned char* pData, int len);
+	void displayHex(unsigned char* pData, int& len);
 	void displayFLVHeader(QTreeWidgetItem* root);
 	void displayFLVTags(QTreeWidgetItem* root);
 	void displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag);
 
 	void setHighlight(int start, int len);
+	void clearDisplay();
 
 private:
 	void setItemFLVPosition(QTreeWidgetItem* item, FLVPosition* pos);
@@ -35,6 +40,10 @@ private slots:
 private:
 	FLVStruct* flv;
 	class FLVStructParse* parser;
+
+	int curShowHexDataStartInFLV;
+	int curShowHexDataLen;
+
 private:
 	Ui::flvParseClass ui;
 };
