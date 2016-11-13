@@ -31,10 +31,7 @@ private:
 	FLVPosition* getItemFLVPosition(QTreeWidgetItem* item);
 
 private slots:
-	void on_openButton_clicked();
-	void on_testButton_clicked();
-	void on_test2Button_clicked();
-	
+	void on_openButton_clicked();			
 	void on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column);
 
 private:

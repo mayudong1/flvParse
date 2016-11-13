@@ -53,6 +53,9 @@
          <property name="uniformRowHeights">
           <bool>true</bool>
          </property>
+         <property name="animated">
+          <bool>true</bool>
+         </property>
          <property name="allColumnsShowFocus">
           <bool>false</bool>
          </property>
@@ -77,7 +80,7 @@
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>100</height>
+        <height>30</height>
        </size>
       </property>
       <property name="maximumSize">
@@ -86,45 +89,22 @@
         <height>100</height>
        </size>
       </property>
-      <widget class="QPushButton" name="openButton">
-       <property name="geometry">
-        <rect>
-         <x>380</x>
-         <y>20</y>
-         <width>111</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>PushButton</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="testButton">
-       <property name="geometry">
-        <rect>
-         <x>590</x>
-         <y>20</y>
-         <width>75</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>test1</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="test2Button">
-       <property name="geometry">
-        <rect>
-         <x>590</x>
-         <y>60</y>
-         <width>75</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>test2</string>
-       </property>
-      </widget>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="1">
+        <widget class="QPushButton" name="openButton">
+         <property name="text">
+          <string>打开文件</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLineEdit" name="filePathEdit">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>

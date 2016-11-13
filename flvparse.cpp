@@ -246,22 +246,13 @@ void flvParse::on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column)
 }
 
 void flvParse::on_openButton_clicked()
-{
-
-}
-
-void flvParse::on_testButton_clicked()
 {	
 	QFileDialog *dlg = new QFileDialog(this);
 	if (dlg->exec() == QFileDialog::Accepted)
 	{
 		QStringList files = dlg->selectedFiles();
 		QString fileName = files.at(0);		
+		this->ui.filePathEdit->setText(fileName);
 		displayFLV(fileName);
 	}
-}
-
-void flvParse::on_test2Button_clicked()
-{
-
 }
