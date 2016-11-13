@@ -17,6 +17,7 @@ private:
 	void displayHex(unsigned char* pData, int len);
 	void displayFLVHeader(QTreeWidgetItem* root);
 	void displayFLVTags(QTreeWidgetItem* root);
+	void displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag);
 
 	void setHighlight(int start, int len);
 

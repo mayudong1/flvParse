@@ -56,6 +56,8 @@ public:
 	FLVObject<int> type;
 	FLVObject<unsigned int> dataSize;
 	FLVObject<unsigned int> timestamp;
+	FLVObject<unsigned int> streamId;
+
 	FLVObject<unsigned int> preTagSize;
     FLVTag* next;
 

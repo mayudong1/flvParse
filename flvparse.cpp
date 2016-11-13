@@ -100,6 +100,24 @@ void flvParse::displayFLVHeader(QTreeWidgetItem* root)
 	root->addChild(firstTagSize);
 
 }
+void flvParse::displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag)
+{
+	QString strTmp;
+	strTmp.sprintf("type: %d", tag->type.value);
+	QTreeWidgetItem *type = new QTreeWidgetItem(QStringList(strTmp));
+	setItemFLVPosition(type, &tag->type.pos);
+	tagItem->addChild(type);
+
+	strTmp.sprintf("data size: %d", tag->dataSize.value);
+	QTreeWidgetItem *dataSize = new QTreeWidgetItem(QStringList(strTmp));
+	setItemFLVPosition(dataSize, &tag->dataSize.pos);
+	tagItem->addChild(dataSize);
+
+	strTmp.sprintf("timestamp: %d", tag->timestamp.value);
+	QTreeWidgetItem *timestamp = new QTreeWidgetItem(QStringList(strTmp));
+	setItemFLVPosition(timestamp, &tag->timestamp.pos);
+	tagItem->addChild(timestamp);
+}
 
 void flvParse::displayFLVTags(QTreeWidgetItem* root)
 {
@@ -127,7 +145,9 @@ void flvParse::displayFLVTags(QTreeWidgetItem* root)
 		}
 		QTreeWidgetItem *tagItem = new QTreeWidgetItem(QStringList(strTagType));
 		setItemFLVPosition(tagItem, &tag->pos);
-		root->addChild(tagItem);
+		root->addChild(tagItem);		
+
+		displayFLVTagDetail(tagItem, tag);
 
 		strTmp.sprintf("preTagSize: %d", tag->preTagSize);
 		QTreeWidgetItem *preTagSizeItem = new QTreeWidgetItem(QStringList(strTmp));

@@ -124,9 +124,16 @@ int FLVStructParse::parseFlvTags()
 			break;
 		}
 		tag->timestamp.value = timestampEx << 24 | timestamp;
+		pos.start -= 3;
+		pos.len += 3;
 		tag->timestamp.pos = pos;
+		
+		if (!ReadUint24(tag->streamId.value, pos))
+		{
+			break;
+		}
+		tag->streamId.pos = pos;
 
-		Seek(3, pos);//streamid always 0
 		Seek(tag->dataSize.value, pos);
 
 		if (!ReadUint32(tag->preTagSize.value, pos))
