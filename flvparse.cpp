@@ -123,9 +123,9 @@ void flvParse::displayFLVTags(QTreeWidgetItem* root)
 		setItemFLVPosition(tagItem, &tag->pos);
 		root->addChild(tagItem);
 
-		strTmp.sprintf("preTagSize: %d", tag->tagSize);
+		strTmp.sprintf("preTagSize: %d", tag->preTagSize);
 		QTreeWidgetItem *preTagSizeItem = new QTreeWidgetItem(QStringList(strTmp));
-		setItemFLVPosition(preTagSizeItem, &tag->tagSize.pos);
+		setItemFLVPosition(preTagSizeItem, &tag->preTagSize.pos);
 		root->addChild(preTagSizeItem);
 		tag = tag->next;
 	}

@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "Util.h"
-
+namespace Util
+{
 bool ReadByte(char &value, unsigned char* pData, int dataLen, int &curIndex)
 {
-	assert(pData && dataLen>0 && curIndex>=0);
+	assert(pData && dataLen > 0 && curIndex >= 0);
 
 	if (curIndex + 1 > dataLen)
 		return false;
@@ -17,7 +18,7 @@ bool ReadByte(char &value, unsigned char* pData, int dataLen, int &curIndex)
 
 bool ReadUint32(unsigned int &value, unsigned char* pData, int dataLen, int &curIndex)
 {
-	assert(pData && dataLen>0 && curIndex >= 0);
+	assert(pData && dataLen > 0 && curIndex >= 0);
 
 	if (curIndex + 4 > dataLen)
 		return false;
@@ -29,7 +30,7 @@ bool ReadUint32(unsigned int &value, unsigned char* pData, int dataLen, int &cur
 }
 bool ReadUint24(unsigned int &value, unsigned char* pData, int dataLen, int &curIndex)
 {
-	assert(pData && dataLen>0 && curIndex >= 0);
+	assert(pData && dataLen > 0 && curIndex >= 0);
 
 	if (curIndex + 3 > dataLen)
 		return false;
@@ -42,10 +43,12 @@ bool ReadUint24(unsigned int &value, unsigned char* pData, int dataLen, int &cur
 
 bool Seek(int len, unsigned char* pData, int dataLen, int &curIndex)
 {
-	assert(pData && dataLen>0 && curIndex >= 0);
+	assert(pData && dataLen > 0 && curIndex >= 0);
 
 	if (curIndex + len > dataLen)
 		return false;
 	curIndex += len;
 	return true;
+}
+
 }

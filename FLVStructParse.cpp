@@ -18,48 +18,69 @@ FLVStructParse::~FLVStructParse()
 	}
 }
 
+bool FLVStructParse::ReadByte(char &value, FLVPosition& retPos)
+{
+	retPos.start = curIndex;
+	bool ret = Util::ReadByte(value, flv->data, flv->dataLen, curIndex);
+	retPos.len = curIndex - retPos.start;
+	return ret;
+}
+bool FLVStructParse::ReadUint32(unsigned int &value, FLVPosition& retPos)
+{
+	retPos.start = curIndex;
+	bool ret = Util::ReadUint32(value, flv->data, flv->dataLen, curIndex);
+	retPos.len = curIndex - retPos.start;
+	return ret;
+}
+bool FLVStructParse::ReadUint24(unsigned int &value, FLVPosition& retPos)
+{
+	retPos.start = curIndex;
+	bool ret = Util::ReadUint24(value, flv->data, flv->dataLen, curIndex);
+	retPos.len = curIndex - retPos.start;
+	return ret;
+}
+bool FLVStructParse::Seek(int len, FLVPosition& retPos)
+{
+	retPos.start = curIndex;
+	bool ret = Util::Seek(len, flv->data, flv->dataLen, curIndex);
+	retPos.len = curIndex - retPos.start;
+	return ret;
+}
+
 int FLVStructParse::parseFlvHeader()
 {
 	flv->header.pos.start = curIndex;
 
-	FLVPosition pos;
-	pos.start = curIndex;
-	ReadByte(flv->header.signature.value[0], flv->data, flv->dataLen, curIndex);
-	ReadByte(flv->header.signature.value[1], flv->data, flv->dataLen, curIndex);
-	ReadByte(flv->header.signature.value[2], flv->data, flv->dataLen, curIndex);
+	FLVPosition pos;	
+	ReadByte(flv->header.signature.value[0], pos);
+	ReadByte(flv->header.signature.value[1], pos);
+	ReadByte(flv->header.signature.value[2], pos);
 	if (strcmp(flv->header.signature.value, "FLV") != 0)
 	{
 		return -1;
-	}
-	pos.len = curIndex - pos.start;
+	}	
 	flv->header.signature.pos = pos;
-	
-	pos.start = curIndex;
-	if (!ReadByte(flv->header.version.value, flv->data, flv->dataLen, curIndex))
-	{
-		return -1;
-	}
-	pos.len = curIndex - pos.start;
-	flv->header.version.pos = pos;
-
-	char flag = 0;
-	pos.start = curIndex;
-	if (!ReadByte(flag, flv->data, flv->dataLen, curIndex))
+		
+	if (!ReadByte(flv->header.version.value, pos))
 	{
 		return -1;
 	}	
-	pos.len = curIndex - pos.start;
+	flv->header.version.pos = pos;
+
+	char flag = 0;	
+	if (!ReadByte(flag, pos))
+	{
+		return -1;
+	}		
 	flv->header.hasAudio.value = flag & 0x04;
 	flv->header.hasAudio.pos = pos;
 	flv->header.hasVideo.value = flag & 0x01;
 	flv->header.hasVideo.pos = pos;
 
-	pos.start = curIndex;
-	if (!ReadUint32(flv->header.headerLen.value, flv->data, flv->dataLen, curIndex))
+	if (!ReadUint32(flv->header.headerLen.value, pos))
 	{
 		return -1;
-	}
-	pos.len = curIndex - pos.start;
+	}	
 	flv->header.headerLen.pos = pos;
 
 	flv->header.pos.len = curIndex - flv->header.pos.start;
@@ -74,34 +95,50 @@ int FLVStructParse::parseFlvTags()
 	{
 		FLVTag* tag = new FLVTag;
 		tag->pos.start = curIndex;
+
+		FLVPosition pos;
 		char type = 0;
-		if (!ReadByte(type, flv->data, flv->dataLen, curIndex))
+		if (!ReadByte(type, pos))
 		{
 			break;
 		}
 		tag->encrypted.value = (type >> 5) & 0x01;
+		tag->encrypted.pos = pos;
 		tag->type.value = type & 0x1f;
-		if (!ReadUint24(tag->dataSize.value, flv->data, flv->dataLen, curIndex))
+		tag->type.pos = pos;
+
+		if (!ReadUint24(tag->dataSize.value, pos))
 		{
 			break;
 		}
+		tag->dataSize.pos = pos;
+
 		unsigned int timestamp = 0;
-		if (!ReadUint24(timestamp, flv->data, flv->dataLen, curIndex))
+		if (!ReadUint24(timestamp, pos))
 		{
 			break;
 		}
 		char timestampEx = 0;
-		if (!ReadByte(timestampEx, flv->data, flv->dataLen, curIndex))
+		if (!ReadByte(timestampEx, pos))
 		{
 			break;
 		}
 		tag->timestamp.value = timestampEx << 24 | timestamp;
-		Seek(3, flv->data, flv->dataLen, curIndex);//streamid always 0
-		Seek(tag->dataSize.value, flv->data, flv->dataLen, curIndex);
-		if (!ReadUint32(tag->tagSize.value, flv->data, flv->dataLen, curIndex))
+		tag->timestamp.pos = pos;
+
+		Seek(3, pos);//streamid always 0
+		Seek(tag->dataSize.value, pos);
+
+		if (!ReadUint32(tag->preTagSize.value, pos))
 		{
 			break;
 		}
+		tag->preTagSize.pos = pos;
+		if (tag->dataSize.pos.len == 0)
+		{
+			break;
+		}
+
 		tag->pos.len = curIndex - tag->pos.start;
 		p->next = tag;
 		p = p->next;
@@ -156,7 +193,8 @@ FLVStruct* FLVStructParse::parseFile(const char* fileName)
 	if (parseFlvHeader() != 0)
 		return NULL;	
 
-	if (!Seek(4, flv->data, flv->dataLen, curIndex))
+	FLVPosition pos;
+	if (!Seek(4, pos))
 		return NULL;
 
 	if (parseFlvTags() != 0)

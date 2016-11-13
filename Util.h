@@ -1,6 +1,9 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__
 
+namespace Util
+{
+
 #define MYD_MIN(a, b) (((a)<(b))?(a):(b))
 #define MYD_MAX(a, b) (((a)>(b))?(a):(b))
 
@@ -19,5 +22,5 @@ bool ReadByte(char &value, unsigned char* pData, int dataLen, int &curIndex);
 bool ReadUint32(unsigned int &value, unsigned char* pData, int dataLen, int &curIndex);
 bool ReadUint24(unsigned int &value, unsigned char* pData, int dataLen, int &curIndex);
 bool Seek(int len, unsigned char* pData, int dataLen, int &curIndex);
-
+}
 #endif

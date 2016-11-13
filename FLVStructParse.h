@@ -56,7 +56,7 @@ public:
 	FLVObject<int> type;
 	FLVObject<unsigned int> dataSize;
 	FLVObject<unsigned int> timestamp;
-	FLVObject<unsigned int> tagSize;
+	FLVObject<unsigned int> preTagSize;
     FLVTag* next;
 
 	FLVTag()
@@ -65,7 +65,7 @@ public:
 		type.value = 0;
 		dataSize.value = 0;
 		timestamp.value = 0;
-		tagSize.value = 0;
+		preTagSize.value = 0;
 		next = NULL;
 	}
 };
@@ -117,6 +117,11 @@ private:
 	int parseFlvHeader();
 	int parseFlvTags();
 
+private:
+	bool ReadByte(char &value, FLVPosition& retPos);
+	bool ReadUint32(unsigned int &value, FLVPosition& retPos);
+	bool ReadUint24(unsigned int &value, FLVPosition& retPos);
+	bool Seek(int len, FLVPosition& retPos);
 private:
 	FLVStruct* flv;
 	int curIndex;
