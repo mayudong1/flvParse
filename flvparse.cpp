@@ -126,6 +126,10 @@ void flvParse::displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag)
 	QTreeWidgetItem *streamId = new QTreeWidgetItem(QStringList(strTmp));
 	setItemFLVPosition(streamId, &tag->header.streamId.pos);
 	header->addChild(streamId);
+
+	QTreeWidgetItem *data = new QTreeWidgetItem(QStringList("Tag Data"));
+	setItemFLVPosition(data, &tag->data.pos);
+	tagItem->addChild(data);
 }
 
 void flvParse::displayFLVTags(QTreeWidgetItem* root)

@@ -76,7 +76,7 @@ class FLVTag : public BaseStruct
 {
 public:
 	FLVTagHeader header;	
-	FLVTagBody body;
+	FLVTagBody data;
 	FLVObject<unsigned int> preTagSize;
     FLVTag* next;
 	FLVTag()

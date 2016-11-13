@@ -136,6 +136,7 @@ int FLVStructParse::parseFlvTags()
 		tag->header.pos.len = curIndex - tag->header.pos.start;
 
 		Seek(tag->header.dataSize.value, pos);
+		tag->data.pos = pos;
 
 		if (!ReadUint32(tag->preTagSize.value, pos))
 		{
