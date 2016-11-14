@@ -22,7 +22,8 @@
         <widget class="QTextEdit" name="hexView">
          <property name="font">
           <font>
-           <pointsize>12</pointsize>
+           <family>FangSong</family>
+           <pointsize>18</pointsize>
           </font>
          </property>
          <property name="readOnly">
