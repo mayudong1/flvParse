@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
+#include "amf.h"
 
 typedef struct FLVPosition
 {
@@ -67,9 +68,22 @@ public:
 	}
 };
 
+typedef struct KeyValue
+{
+    char* key;
+    double value;
+}KeyValue;
+
 class FLVTagBody : public BaseStruct
 {
+public:
+    FLVObject<char> amf0_type;
+    FLVObject<unsigned int> amf0_len;
+    FLVObject<char*>amf0_data;
 
+    FLVObject<char> amf1_type;
+    FLVObject<unsigned int> amf1_count;
+    KeyValue* values;
 };
 
 class FLVTag : public BaseStruct
@@ -133,11 +147,13 @@ private:
 	int LoadFile(const char* fileName);
 	int parseFlvHeader();
 	int parseFlvTags();
+    int parseMetadata(FLVTagBody* meta);
 
 private:
 	bool ReadByte(char &value, FLVPosition& retPos);
 	bool ReadUint32(unsigned int &value, FLVPosition& retPos);
 	bool ReadUint24(unsigned int &value, FLVPosition& retPos);
+    bool ReadUint16(unsigned int &value, FLVPosition& retPos);
 	bool Seek(int len, FLVPosition& retPos);
 private:
 	FLVStruct* flv;

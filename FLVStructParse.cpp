@@ -2,6 +2,7 @@
 #include <string.h>
 #include "FLVStructParse.h"
 #include "Util.h"
+#include "amf.h"
 
 FLVStructParse::FLVStructParse()
 {
@@ -38,6 +39,13 @@ bool FLVStructParse::ReadUint24(unsigned int &value, FLVPosition& retPos)
 	bool ret = Util::ReadUint24(value, flv->data, flv->dataLen, curIndex);
 	retPos.len = curIndex - retPos.start;
 	return ret;
+}
+bool FLVStructParse::ReadUint16(unsigned int &value, FLVPosition& retPos)
+{
+    retPos.start = curIndex;
+    bool ret = Util::ReadUint16(value, flv->data, flv->dataLen, curIndex);
+    retPos.len = curIndex - retPos.start;
+    return ret;
 }
 bool FLVStructParse::Seek(int len, FLVPosition& retPos)
 {
@@ -85,6 +93,53 @@ int FLVStructParse::parseFlvHeader()
 
 	flv->header.pos.len = curIndex - flv->header.pos.start;
 	return 0;
+}
+
+int FLVStructParse::parseMetadata(FLVTagBody* meta)
+{
+    ReadByte(meta->amf0_type.value, meta->amf0_type.pos);
+    ReadUint16(meta->amf0_len.value, meta->amf0_len.pos);
+    meta->amf0_data.value = new char[meta->amf0_len.value+1];
+    memset(meta->amf0_data.value, 0, meta->amf0_len.value+1);
+    memcpy(meta->amf0_data.value, flv->data+curIndex, meta->amf0_len.value);
+    Seek(meta->amf0_len.value, meta->amf0_data.pos);
+
+    ReadByte(meta->amf1_type.value, meta->amf1_type.pos);
+    if(meta->amf1_type.value == AMF_ECMA_ARRAY)
+    {
+        ReadUint32(meta->amf1_count.value, meta->amf1_count.pos);
+        meta->values = new KeyValue[meta->amf1_count.value];
+        for(int i=0;i<meta->amf1_count.value;i++)
+        {
+            FLVPosition pos;
+            unsigned int keyLen = 0;
+            ReadUint16(keyLen, pos);
+            meta->values[i].key = new char[keyLen+1];
+            memset(meta->values[i].key, 0, keyLen+1);
+            memcpy(meta->values[i].key, flv->data+curIndex, keyLen);
+            Seek(keyLen, pos);
+
+            char valueType = 0;
+            ReadByte(valueType, pos);
+            if(valueType == AMF_NUMBER)
+            {
+//                meta->values->value = AMF_DecodeNumber((const char*)flv->data+curIndex);
+                curIndex += 8;
+            }
+            else if(valueType == AMF_STRING)
+            {
+                unsigned int len = 0;
+                ReadUint16(len, pos);
+                Seek(len, pos);
+            }
+            else if(valueType == AMF_BOOLEAN)
+            {
+                curIndex += 1;
+            }
+        }
+    }
+
+    return 0;
 }
 
 int FLVStructParse::parseFlvTags()
@@ -135,6 +190,12 @@ int FLVStructParse::parseFlvTags()
 		tag->header.streamId.pos = pos;
 		tag->header.pos.len = curIndex - tag->header.pos.start;
 
+        if(tag->header.type.value == 0x12)
+        {
+            int tmp = curIndex;
+            parseMetadata(&tag->data);
+            curIndex = tmp;
+        }
 		Seek(tag->header.dataSize.value, pos);
 		tag->data.pos = pos;
 		tag->pos.len = curIndex - tag->pos.start;

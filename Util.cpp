@@ -41,6 +41,19 @@ bool ReadUint24(unsigned int &value, unsigned char* pData, int dataLen, int &cur
 	return true;
 }
 
+bool ReadUint16(unsigned int &value, unsigned char* pData, int dataLen, int &curIndex)
+{
+    assert(pData && dataLen > 0 && curIndex >= 0);
+
+    if (curIndex + 2 > dataLen)
+        return false;
+
+    unsigned char* pTmp = pData + curIndex;
+    value = convert16(pTmp);
+    curIndex += 2;
+    return true;
+}
+
 bool Seek(int len, unsigned char* pData, int dataLen, int &curIndex)
 {
 	assert(pData && dataLen > 0 && curIndex >= 0);
