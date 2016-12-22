@@ -77,6 +77,15 @@ bool FLVStructParse::Seek(int len, FLVPosition& retPos)
     return true;
 }
 
+bool FLVStructParse::DecodeAMFString(string& ret, FLVPosition& retPos)
+{
+    int len = FLVUtils::DecodeAMFString(flv->data+curIndex, ret);
+    retPos.start = curIndex;
+    retPos.len = len;
+    curIndex += len;
+    return true;
+}
+
 int FLVStructParse::parseFlvHeader()
 {
 	flv->header.pos.start = curIndex;
@@ -120,11 +129,8 @@ int FLVStructParse::parseFlvHeader()
 int FLVStructParse::parseMetadata(FLVTagBody* meta)
 {
     ReadByte(meta->amf0Type.value, meta->amf0Type.pos);
-    ReadUint16(meta->amf0Len.value, meta->amf0Len.pos);
-    meta->amf0Data.value = new char[meta->amf0Len.value+1];
-    memset(meta->amf0Data.value, 0, meta->amf0Len.value+1);
-    memcpy(meta->amf0Data.value, flv->data+curIndex, meta->amf0Len.value);
-    Seek(meta->amf0Len.value, meta->amf0Data.pos);
+
+    DecodeAMFString(meta->amf0Data.value, meta->amf0Data.pos);
 
     ReadByte(meta->amf1Type.value, meta->amf1Type.pos);
     if(meta->amf1Type.value == AMF_ECMA_ARRAY)
@@ -133,29 +139,24 @@ int FLVStructParse::parseMetadata(FLVTagBody* meta)
         meta->metaArray = new MetadataInfo[meta->amf1Count.value];
         for(int i=0;i<meta->amf1Count.value;i++)
         {
-            FLVPosition pos;
-            unsigned int keyLen = 0;
-            ReadUint16(keyLen, pos);
-            meta->metaArray[i].key = new char[keyLen+1];
-            memset(meta->metaArray[i].key, 0, keyLen+1);
-            memcpy(meta->metaArray[i].key, flv->data+curIndex, keyLen);
-            Seek(keyLen, pos);
+            FLVPosition pos;            
+            DecodeAMFString(meta->metaArray[i].key, pos);
 
             char valueType = 0;
             ReadByte(valueType, pos);
+            meta->metaArray[i].valueType = valueType;
             if(valueType == AMF_NUMBER)
             {
-//                meta->values->value = AMF_DecodeNumber((const char*)flv->data+curIndex);
+                meta->metaArray[i].dValue = AMF_DecodeNumber((const char*)flv->data+curIndex);
                 curIndex += 8;
             }
             else if(valueType == AMF_STRING)
             {
-                unsigned int len = 0;
-                ReadUint16(len, pos);
-                Seek(len, pos);
+               DecodeAMFString(meta->metaArray[i].strValue, pos);
             }
             else if(valueType == AMF_BOOLEAN)
             {
+                meta->metaArray[i].bValue = AMF_DecodeBoolean((const char*)flv->data+curIndex);
                 curIndex += 1;
             }
         }

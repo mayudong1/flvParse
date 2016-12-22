@@ -138,12 +138,7 @@ void flvParse::displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag)
         setItemFLVPosition(afm0TypeItem, &tag->data.amf0Type.pos);
         dataItem->addChild(afm0TypeItem);
 
-        strTmp.sprintf("amf0 len: %d", tag->data.amf0Len.value);
-        QTreeWidgetItem *afm0LenItem = new QTreeWidgetItem(QStringList(strTmp));
-        setItemFLVPosition(afm0LenItem, &tag->data.amf0Len.pos);
-        dataItem->addChild(afm0LenItem);
-
-        strTmp.sprintf("data: %s", tag->data.amf0Data.value);
+        strTmp.sprintf("data: %s", tag->data.amf0Data.value.c_str());
         QTreeWidgetItem *afm0DataItem = new QTreeWidgetItem(QStringList(strTmp));
         setItemFLVPosition(afm0DataItem, &tag->data.amf0Data.pos);
         dataItem->addChild(afm0DataItem);
@@ -166,8 +161,19 @@ void flvParse::displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag)
         for(int i=0;i<tag->data.amf1Count.value;i++)
         {
             MetadataInfo* metaKeyValue = &tag->data.metaArray[i];
+            if(metaKeyValue->valueType == AMF_NUMBER)
+            {
+                strTmp.sprintf("%s: %f", metaKeyValue->key.c_str(), metaKeyValue->dValue);
+            }
+            else if(metaKeyValue->valueType == AMF_STRING)
+            {
+                strTmp.sprintf("%s: %s", metaKeyValue->key.c_str(), metaKeyValue->strValue.c_str());
+            }
+            else if(metaKeyValue->valueType == AMF_BOOLEAN)
+            {
+                strTmp.sprintf("%s: %d", metaKeyValue->key.c_str(), metaKeyValue->bValue);
+            }
 
-            strTmp.sprintf("%s: ", metaKeyValue->key);
             QTreeWidgetItem *keyValueItem = new QTreeWidgetItem(QStringList(strTmp));
             metaDataItem->addChild(keyValueItem);
         }

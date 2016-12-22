@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <string>
 #include "amf.h"
+using namespace std;
 
 typedef struct FLVPosition
 {
@@ -70,16 +72,18 @@ public:
 
 typedef struct MetadataInfo
 {
-    char* key;
-    double value;
+    string key;
+    int valueType;
+    bool bValue;
+    double dValue;
+    string strValue;
 }MetadataInfo;
 
 class FLVTagBody : public BaseStruct
 {
 public:
     FLVObject<char> amf0Type;
-    FLVObject<unsigned int> amf0Len;
-    FLVObject<char*>amf0Data;
+    FLVObject<string>amf0Data;
 
     FLVObject<char> amf1Type;
     FLVObject<unsigned int> amf1Count;
@@ -155,6 +159,7 @@ private:
 	bool ReadUint24(unsigned int &value, FLVPosition& retPos);
     bool ReadUint16(unsigned int &value, FLVPosition& retPos);
 	bool Seek(int len, FLVPosition& retPos);
+    bool DecodeAMFString(string& ret, FLVPosition& retPos);
 private:
 	FLVStruct* flv;
 	int curIndex;
