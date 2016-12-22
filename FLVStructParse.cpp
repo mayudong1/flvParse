@@ -119,26 +119,26 @@ int FLVStructParse::parseFlvHeader()
 
 int FLVStructParse::parseMetadata(FLVTagBody* meta)
 {
-    ReadByte(meta->amf0_type.value, meta->amf0_type.pos);
-    ReadUint16(meta->amf0_len.value, meta->amf0_len.pos);
-    meta->amf0_data.value = new char[meta->amf0_len.value+1];
-    memset(meta->amf0_data.value, 0, meta->amf0_len.value+1);
-    memcpy(meta->amf0_data.value, flv->data+curIndex, meta->amf0_len.value);
-    Seek(meta->amf0_len.value, meta->amf0_data.pos);
+    ReadByte(meta->amf0Type.value, meta->amf0Type.pos);
+    ReadUint16(meta->amf0Len.value, meta->amf0Len.pos);
+    meta->amf0Data.value = new char[meta->amf0Len.value+1];
+    memset(meta->amf0Data.value, 0, meta->amf0Len.value+1);
+    memcpy(meta->amf0Data.value, flv->data+curIndex, meta->amf0Len.value);
+    Seek(meta->amf0Len.value, meta->amf0Data.pos);
 
-    ReadByte(meta->amf1_type.value, meta->amf1_type.pos);
-    if(meta->amf1_type.value == AMF_ECMA_ARRAY)
+    ReadByte(meta->amf1Type.value, meta->amf1Type.pos);
+    if(meta->amf1Type.value == AMF_ECMA_ARRAY)
     {
-        ReadUint32(meta->amf1_count.value, meta->amf1_count.pos);
-        meta->values = new KeyValue[meta->amf1_count.value];
-        for(int i=0;i<meta->amf1_count.value;i++)
+        ReadUint32(meta->amf1Count.value, meta->amf1Count.pos);
+        meta->metaArray = new KeyValue[meta->amf1Count.value];
+        for(int i=0;i<meta->amf1Count.value;i++)
         {
             FLVPosition pos;
             unsigned int keyLen = 0;
             ReadUint16(keyLen, pos);
-            meta->values[i].key = new char[keyLen+1];
-            memset(meta->values[i].key, 0, keyLen+1);
-            memcpy(meta->values[i].key, flv->data+curIndex, keyLen);
+            meta->metaArray[i].key = new char[keyLen+1];
+            memset(meta->metaArray[i].key, 0, keyLen+1);
+            memcpy(meta->metaArray[i].key, flv->data+curIndex, keyLen);
             Seek(keyLen, pos);
 
             char valueType = 0;

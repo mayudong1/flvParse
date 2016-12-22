@@ -77,13 +77,13 @@ typedef struct KeyValue
 class FLVTagBody : public BaseStruct
 {
 public:
-    FLVObject<char> amf0_type;
-    FLVObject<unsigned int> amf0_len;
-    FLVObject<char*>amf0_data;
+    FLVObject<char> amf0Type;
+    FLVObject<unsigned int> amf0Len;
+    FLVObject<char*>amf0Data;
 
-    FLVObject<char> amf1_type;
-    FLVObject<unsigned int> amf1_count;
-    KeyValue* values;
+    FLVObject<char> amf1Type;
+    FLVObject<unsigned int> amf1Count;
+    KeyValue* metaArray;
 };
 
 class FLVTag : public BaseStruct

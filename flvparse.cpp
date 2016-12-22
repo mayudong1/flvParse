@@ -133,39 +133,39 @@ void flvParse::displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag)
     tagItem->addChild(dataItem);
     if(tag->header.type.value == 0x12)
     {
-        strTmp.sprintf("amf0 type: %d", tag->data.amf0_type.value);
+        strTmp.sprintf("amf0 type: %d", tag->data.amf0Type.value);
         QTreeWidgetItem *afm0TypeItem = new QTreeWidgetItem(QStringList(strTmp));
-        setItemFLVPosition(afm0TypeItem, &tag->data.amf0_type.pos);
+        setItemFLVPosition(afm0TypeItem, &tag->data.amf0Type.pos);
         dataItem->addChild(afm0TypeItem);
 
-        strTmp.sprintf("amf0 len: %d", tag->data.amf0_len.value);
+        strTmp.sprintf("amf0 len: %d", tag->data.amf0Len.value);
         QTreeWidgetItem *afm0LenItem = new QTreeWidgetItem(QStringList(strTmp));
-        setItemFLVPosition(afm0LenItem, &tag->data.amf0_len.pos);
+        setItemFLVPosition(afm0LenItem, &tag->data.amf0Len.pos);
         dataItem->addChild(afm0LenItem);
 
-        strTmp.sprintf("data: %s", tag->data.amf0_data.value);
+        strTmp.sprintf("data: %s", tag->data.amf0Data.value);
         QTreeWidgetItem *afm0DataItem = new QTreeWidgetItem(QStringList(strTmp));
-        setItemFLVPosition(afm0DataItem, &tag->data.amf0_data.pos);
+        setItemFLVPosition(afm0DataItem, &tag->data.amf0Data.pos);
         dataItem->addChild(afm0DataItem);
 
 
-        strTmp.sprintf("amf1 type: %d", tag->data.amf1_type.value);
+        strTmp.sprintf("amf1 type: %d", tag->data.amf1Type.value);
         QTreeWidgetItem *amf1TypeItem = new QTreeWidgetItem(QStringList(strTmp));
-        setItemFLVPosition(amf1TypeItem, &tag->data.amf1_type.pos);
+        setItemFLVPosition(amf1TypeItem, &tag->data.amf1Type.pos);
         dataItem->addChild(amf1TypeItem);
 
-        strTmp.sprintf("amf1 count: %d", tag->data.amf1_count.value);
+        strTmp.sprintf("amf1 count: %d", tag->data.amf1Count.value);
         QTreeWidgetItem *amf1CountItem = new QTreeWidgetItem(QStringList(strTmp));
-        setItemFLVPosition(amf1CountItem, &tag->data.amf1_count.pos);
+        setItemFLVPosition(amf1CountItem, &tag->data.amf1Count.pos);
         dataItem->addChild(amf1CountItem);
 
         strTmp.sprintf("metadata");
         QTreeWidgetItem *metaDataItem = new QTreeWidgetItem(QStringList(strTmp));
         dataItem->addChild(metaDataItem);
 
-        for(int i=0;i<tag->data.amf1_count.value;i++)
+        for(int i=0;i<tag->data.amf1Count.value;i++)
         {
-            KeyValue* metaKeyValue = &tag->data.values[i];
+            KeyValue* metaKeyValue = &tag->data.metaArray[i];
 
             strTmp.sprintf("%s: ", metaKeyValue->key);
             QTreeWidgetItem *keyValueItem = new QTreeWidgetItem(QStringList(strTmp));
