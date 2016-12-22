@@ -165,7 +165,7 @@ void flvParse::displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag)
 
         for(int i=0;i<tag->data.amf1Count.value;i++)
         {
-            KeyValue* metaKeyValue = &tag->data.metaArray[i];
+            MetadataInfo* metaKeyValue = &tag->data.metaArray[i];
 
             strTmp.sprintf("%s: ", metaKeyValue->key);
             QTreeWidgetItem *keyValueItem = new QTreeWidgetItem(QStringList(strTmp));

@@ -68,11 +68,11 @@ public:
 	}
 };
 
-typedef struct KeyValue
+typedef struct MetadataInfo
 {
     char* key;
     double value;
-}KeyValue;
+}MetadataInfo;
 
 class FLVTagBody : public BaseStruct
 {
@@ -83,7 +83,7 @@ public:
 
     FLVObject<char> amf1Type;
     FLVObject<unsigned int> amf1Count;
-    KeyValue* metaArray;
+    MetadataInfo* metaArray;
 };
 
 class FLVTag : public BaseStruct

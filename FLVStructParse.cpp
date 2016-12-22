@@ -130,7 +130,7 @@ int FLVStructParse::parseMetadata(FLVTagBody* meta)
     if(meta->amf1Type.value == AMF_ECMA_ARRAY)
     {
         ReadUint32(meta->amf1Count.value, meta->amf1Count.pos);
-        meta->metaArray = new KeyValue[meta->amf1Count.value];
+        meta->metaArray = new MetadataInfo[meta->amf1Count.value];
         for(int i=0;i<meta->amf1Count.value;i++)
         {
             FLVPosition pos;
