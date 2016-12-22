@@ -17,6 +17,8 @@ flvParse::flvParse(QWidget *parent)
 	parser = new FLVStructParse();
 	curShowHexDataStartInFLV = 0;
 	curShowHexDataLen = 0;	
+    ui.flvStructTree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui.flvStructTree->header()->setStretchLastSection(false);
 }
 
 flvParse::~flvParse()
@@ -175,6 +177,7 @@ void flvParse::displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag)
             }
 
             QTreeWidgetItem *keyValueItem = new QTreeWidgetItem(QStringList(strTmp));
+            keyValueItem->setToolTip(0, strTmp);
             metaDataItem->addChild(keyValueItem);
         }
     }
