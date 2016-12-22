@@ -106,7 +106,7 @@ public:
 	FLVHeader header;
 	FLVObject<unsigned int> firstTagSize;
 	FLVTag* tagList;
-	unsigned int dataLen;
+    int dataLen;
 	unsigned char* data;
 	FLVStruct()
 	{

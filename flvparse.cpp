@@ -44,7 +44,7 @@ void flvParse::displayHex(unsigned char* pData, int& len)
 {
 	Q_ASSERT(pData && len >= 0);
 
-	len = MYD_MIN(len, 1024);
+    len = FLV_MIN(len, 1024);
 	QString str = convert(pData, len);
 	this->ui.hexView->setText(str);
 }
@@ -281,7 +281,7 @@ void flvParse::on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column)
 	}
 	
 	int highlightStart = pos->start - curShowHexDataStartInFLV;
-	int highlightLen = MYD_MIN((curShowHexDataLen-highlightStart), pos->len);
+    int highlightLen = FLV_MIN((curShowHexDataLen-highlightStart), pos->len);
 
 	setHighlight(highlightStart, highlightLen);
 }

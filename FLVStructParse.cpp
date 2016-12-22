@@ -21,38 +21,60 @@ FLVStructParse::~FLVStructParse()
 
 bool FLVStructParse::ReadByte(char &value, FLVPosition& retPos)
 {
+    if(curIndex > flv->dataLen)
+        return false;
+
 	retPos.start = curIndex;
-	bool ret = Util::ReadByte(value, flv->data, flv->dataLen, curIndex);
-	retPos.len = curIndex - retPos.start;
-	return ret;
+    retPos.len = 1;
+    unsigned char* tmp = flv->data+curIndex;
+    value = *tmp;
+    curIndex++;
+    return true;
 }
 bool FLVStructParse::ReadUint32(unsigned int &value, FLVPosition& retPos)
 {
-	retPos.start = curIndex;
-	bool ret = Util::ReadUint32(value, flv->data, flv->dataLen, curIndex);
-	retPos.len = curIndex - retPos.start;
-	return ret;
+    if(curIndex+4 > flv->dataLen)
+        return false;
+
+    retPos.start = curIndex;
+    retPos.len = 4;
+    unsigned char* tmp = flv->data+curIndex;
+    value = (tmp[0]<<24) + (tmp[1]<<16) + (tmp[2]<<8) + tmp[3];
+    curIndex += 4;
+    return true;
 }
 bool FLVStructParse::ReadUint24(unsigned int &value, FLVPosition& retPos)
 {
-	retPos.start = curIndex;
-	bool ret = Util::ReadUint24(value, flv->data, flv->dataLen, curIndex);
-	retPos.len = curIndex - retPos.start;
-	return ret;
+    if(curIndex+3 > flv->dataLen)
+        return false;
+
+    retPos.start = curIndex;
+    retPos.len = 3;
+    unsigned char* tmp = flv->data+curIndex;
+    value = (tmp[0]<<16) + (tmp[1]<<8) + tmp[2];
+    curIndex += 3;
+    return true;
 }
 bool FLVStructParse::ReadUint16(unsigned int &value, FLVPosition& retPos)
 {
+    if(curIndex+2 > flv->dataLen)
+        return false;
+
     retPos.start = curIndex;
-    bool ret = Util::ReadUint16(value, flv->data, flv->dataLen, curIndex);
-    retPos.len = curIndex - retPos.start;
-    return ret;
+    retPos.len = 2;
+    unsigned char* tmp = flv->data+curIndex;
+    value = (tmp[0]<<8) + tmp[1];
+    curIndex += 2;
+    return true;
 }
 bool FLVStructParse::Seek(int len, FLVPosition& retPos)
 {
-	retPos.start = curIndex;
-	bool ret = Util::Seek(len, flv->data, flv->dataLen, curIndex);
-	retPos.len = curIndex - retPos.start;
-	return ret;
+    if(curIndex + len > flv->dataLen)
+        return false;
+	retPos.start = curIndex;	
+    retPos.len = len;
+    curIndex += len;
+    return true;
 }
 
 int FLVStructParse::parseFlvHeader()
