@@ -88,6 +88,18 @@ public:
     FLVObject<char> amf1Type;
     FLVObject<unsigned int> amf1Count;
     MetadataInfo* metaArray;
+    FLVTagBody()
+    {
+        amf0Type.value = 0;
+        amf1Type.value = 0;
+        amf1Count.value = 0;
+        metaArray = NULL;
+    }
+    ~FLVTagBody()
+    {
+        if(metaArray != NULL)
+            delete[] metaArray;
+    }
 };
 
 class FLVTag : public BaseStruct
