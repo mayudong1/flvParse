@@ -160,9 +160,12 @@ void flvParse::displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag)
         QTreeWidgetItem *metaDataItem = new QTreeWidgetItem(QStringList(strTmp));
         dataItem->addChild(metaDataItem);
 
+        MetadataInfo* pMeta = tag->data.metaArray;
         for(int i=0;i<tag->data.amf1Count.value;i++)
         {
-            MetadataInfo* metaKeyValue = &tag->data.metaArray[i];
+            MetadataInfo* metaKeyValue = pMeta->next;
+            if(metaKeyValue == NULL)
+                break;
             if(metaKeyValue->valueType == AMF_NUMBER)
             {
                 strTmp.sprintf("%s: %f", metaKeyValue->key.c_str(), metaKeyValue->dValue);
@@ -179,6 +182,7 @@ void flvParse::displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag)
             QTreeWidgetItem *keyValueItem = new QTreeWidgetItem(QStringList(strTmp));
             keyValueItem->setToolTip(0, strTmp);
             metaDataItem->addChild(keyValueItem);
+            pMeta = pMeta->next;
         }
     }
 }

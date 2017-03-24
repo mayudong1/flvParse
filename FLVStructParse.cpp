@@ -133,33 +133,75 @@ int FLVStructParse::parseMetadata(FLVTagBody* meta)
     DecodeAMFString(meta->amf0Data.value, meta->amf0Data.pos);
 
     ReadByte(meta->amf1Type.value, meta->amf1Type.pos);
+    meta->metaArray = new MetadataInfo;
+    MetadataInfo* pEnd = meta->metaArray;
     if(meta->amf1Type.value == AMF_ECMA_ARRAY)
-    {
+    {        
         ReadUint32(meta->amf1Count.value, meta->amf1Count.pos);
-        meta->metaArray = new MetadataInfo[meta->amf1Count.value];
         for(int i=0;i<meta->amf1Count.value;i++)
         {
+            MetadataInfo* pMetaData = new MetadataInfo;
             FLVPosition pos;            
-            DecodeAMFString(meta->metaArray[i].key, pos);
+            DecodeAMFString(pMetaData->key, pos);
 
             char valueType = 0;
             ReadByte(valueType, pos);
-            meta->metaArray[i].valueType = valueType;
+            pMetaData->valueType = valueType;
             if(valueType == AMF_NUMBER)
             {
-                meta->metaArray[i].dValue = AMF_DecodeNumber((const char*)flv->data+curIndex);
+                pMetaData->dValue = AMF_DecodeNumber((const char*)flv->data+curIndex);
                 curIndex += 8;
             }
             else if(valueType == AMF_STRING)
             {
-               DecodeAMFString(meta->metaArray[i].strValue, pos);
+               DecodeAMFString(pMetaData->strValue, pos);
             }
             else if(valueType == AMF_BOOLEAN)
             {
-                meta->metaArray[i].bValue = AMF_DecodeBoolean((const char*)flv->data+curIndex);
+                pMetaData->bValue = AMF_DecodeBoolean((const char*)flv->data+curIndex);
                 curIndex += 1;
             }
+            pEnd->next = pMetaData;
+            pEnd = pEnd->next;
         }
+    }
+    else if(meta->amf1Type.value == AMF_OBJECT)
+    {
+        int metaItemCount = 0;
+        while(1)
+        {
+            MetadataInfo* pMetaData = new MetadataInfo;
+            FLVPosition pos;
+            DecodeAMFString(pMetaData->key, pos);
+
+            char valueType = 0;
+            ReadByte(valueType, pos);
+            pMetaData->valueType = valueType;
+            if(valueType == AMF_NUMBER)
+            {
+                pMetaData->dValue = AMF_DecodeNumber((const char*)flv->data+curIndex);
+                curIndex += 8;
+            }
+            else if(valueType == AMF_STRING)
+            {
+               DecodeAMFString(pMetaData->strValue, pos);
+            }
+            else if(valueType == AMF_BOOLEAN)
+            {
+                pMetaData->bValue = AMF_DecodeBoolean((const char*)flv->data+curIndex);
+                curIndex += 1;
+            }
+            else if(valueType == AMF_OBJECT_END)
+            {
+                curIndex += 2;
+                break;
+            }
+
+            pEnd->next = pMetaData;
+            pEnd = pEnd->next;
+            metaItemCount++;
+        }
+        meta->amf1Count.value = metaItemCount;
     }
 
     return 0;

@@ -77,6 +77,11 @@ typedef struct MetadataInfo
     bool bValue;
     double dValue;
     string strValue;
+    struct MetadataInfo* next;
+    MetadataInfo()
+    {
+        next = NULL;
+    }
 }MetadataInfo;
 
 class FLVTagBody : public BaseStruct
@@ -97,8 +102,13 @@ public:
     }
     ~FLVTagBody()
     {
-        if(metaArray != NULL)
-            delete[] metaArray;
+        MetadataInfo* p = metaArray;
+        while(p != NULL)
+        {
+            MetadataInfo* tmp = p;
+            p = p->next;
+            delete tmp;
+        }
     }
 };
 
