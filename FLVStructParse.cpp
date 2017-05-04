@@ -111,7 +111,7 @@ int FLVStructParse::parseFlvHeader()
 	{
 		return -1;
 	}		
-	flv->header.hasAudio.value = flag & 0x04;
+    flv->header.hasAudio.value = (flag>>2) & 0x01;
 	flv->header.hasAudio.pos = pos;
 	flv->header.hasVideo.value = flag & 0x01;
 	flv->header.hasVideo.pos = pos;
