@@ -207,6 +207,25 @@ int FLVStructParse::parseMetadata(FLVMetadataTagBody* meta)
     return 0;
 }
 
+int FLVStructParse::parseVideoTag(FLVVideoTagBody* videoTag)
+{
+    if(videoTag == NULL)
+        return -1;
+
+    FLVPosition pos;
+    char value;
+    ReadByte(value, pos);
+    videoTag->frameType.value = (value>>4);
+    videoTag->frameType.pos = pos;
+    videoTag->codecID.value = (value&0x0f);
+    videoTag->codecID.pos = pos;
+    ReadByte(value, pos);
+    videoTag->avcPacketType.value = value;
+    videoTag->avcPacketType.pos = pos;
+    ReadUint24(videoTag->compositionTime.value, videoTag->compositionTime.pos);
+    return 0;
+}
+
 int FLVStructParse::parseFlvTags()
 {
 	flv->tagList = new FLVTag;
@@ -260,6 +279,13 @@ int FLVStructParse::parseFlvTags()
             int tmp = curIndex;
             tag->data = new FLVMetadataTagBody();
             parseMetadata((FLVMetadataTagBody*)tag->data);
+            curIndex = tmp;
+        }
+        else if(tag->header.type.value == 0x09)
+        {
+            int tmp = curIndex;
+            tag->data = new FLVVideoTagBody();
+            parseVideoTag((FLVVideoTagBody*)tag->data);
             curIndex = tmp;
         }
         else

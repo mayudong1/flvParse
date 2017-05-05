@@ -112,6 +112,15 @@ public:
     }
 };
 
+class FLVVideoTagBody : public BaseStruct
+{
+public:
+    FLVObject<int> frameType;
+    FLVObject<int> codecID;
+    FLVObject<int> avcPacketType;
+    FLVObject<unsigned int> compositionTime;
+};
+
 class FLVTag : public BaseStruct
 {
 public:
@@ -180,6 +189,7 @@ private:
 	int parseFlvHeader();
 	int parseFlvTags();
     int parseMetadata(FLVMetadataTagBody* meta);
+    int parseVideoTag(FLVVideoTagBody* videoTag);
 
 private:
 	bool ReadByte(char &value, FLVPosition& retPos);

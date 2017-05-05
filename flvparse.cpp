@@ -136,56 +136,91 @@ void flvParse::displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag)
     if(tag->header.type.value == 0x12)
     {
         FLVMetadataTagBody* metadataTag = (FLVMetadataTagBody*)tag->data;
-        strTmp.sprintf("amf0 type: %d", metadataTag->amf0Type.value);
-        QTreeWidgetItem *afm0TypeItem = new QTreeWidgetItem(QStringList(strTmp));
-        setItemFLVPosition(afm0TypeItem, &metadataTag->amf0Type.pos);
-        dataItem->addChild(afm0TypeItem);
-
-        strTmp.sprintf("data: %s", metadataTag->amf0Data.value.c_str());
-        QTreeWidgetItem *afm0DataItem = new QTreeWidgetItem(QStringList(strTmp));
-        setItemFLVPosition(afm0DataItem, &metadataTag->amf0Data.pos);
-        dataItem->addChild(afm0DataItem);
-
-
-        strTmp.sprintf("amf1 type: %d", metadataTag->amf1Type.value);
-        QTreeWidgetItem *amf1TypeItem = new QTreeWidgetItem(QStringList(strTmp));
-        setItemFLVPosition(amf1TypeItem, &metadataTag->amf1Type.pos);
-        dataItem->addChild(amf1TypeItem);
-
-        strTmp.sprintf("amf1 count: %d", metadataTag->amf1Count.value);
-        QTreeWidgetItem *amf1CountItem = new QTreeWidgetItem(QStringList(strTmp));
-        setItemFLVPosition(amf1CountItem, &metadataTag->amf1Count.pos);
-        dataItem->addChild(amf1CountItem);
-
-        strTmp.sprintf("metadata");
-        QTreeWidgetItem *metaDataItem = new QTreeWidgetItem(QStringList(strTmp));
-        dataItem->addChild(metaDataItem);
-
-        MetadataInfo* pMeta = metadataTag->metaArray;
-        for(int i=0;i<metadataTag->amf1Count.value;i++)
-        {
-            MetadataInfo* metaKeyValue = pMeta->next;
-            if(metaKeyValue == NULL)
-                break;
-            if(metaKeyValue->valueType == AMF_NUMBER)
-            {
-                strTmp.sprintf("%s: %f", metaKeyValue->key.c_str(), metaKeyValue->dValue);
-            }
-            else if(metaKeyValue->valueType == AMF_STRING)
-            {
-                strTmp.sprintf("%s: %s", metaKeyValue->key.c_str(), metaKeyValue->strValue.c_str());
-            }
-            else if(metaKeyValue->valueType == AMF_BOOLEAN)
-            {
-                strTmp.sprintf("%s: %d", metaKeyValue->key.c_str(), metaKeyValue->bValue);
-            }
-
-            QTreeWidgetItem *keyValueItem = new QTreeWidgetItem(QStringList(strTmp));
-            keyValueItem->setToolTip(0, strTmp);
-            metaDataItem->addChild(keyValueItem);
-            pMeta = pMeta->next;
-        }
+        displayMetadataDetail(dataItem, metadataTag);
     }
+    else if(tag->header.type.value == 0x09)
+    {
+        FLVVideoTagBody* videoTag = (FLVVideoTagBody*)tag->data;
+        displayVideoDetail(dataItem, videoTag);
+    }
+}
+
+void flvParse::displayMetadataDetail(QTreeWidgetItem* dataItem, FLVMetadataTagBody* metadataTag)
+{
+    QString strTmp;
+    strTmp.sprintf("amf0 type: %d", metadataTag->amf0Type.value);
+    QTreeWidgetItem *afm0TypeItem = new QTreeWidgetItem(QStringList(strTmp));
+    setItemFLVPosition(afm0TypeItem, &metadataTag->amf0Type.pos);
+    dataItem->addChild(afm0TypeItem);
+
+    strTmp.sprintf("data: %s", metadataTag->amf0Data.value.c_str());
+    QTreeWidgetItem *afm0DataItem = new QTreeWidgetItem(QStringList(strTmp));
+    setItemFLVPosition(afm0DataItem, &metadataTag->amf0Data.pos);
+    dataItem->addChild(afm0DataItem);
+
+
+    strTmp.sprintf("amf1 type: %d", metadataTag->amf1Type.value);
+    QTreeWidgetItem *amf1TypeItem = new QTreeWidgetItem(QStringList(strTmp));
+    setItemFLVPosition(amf1TypeItem, &metadataTag->amf1Type.pos);
+    dataItem->addChild(amf1TypeItem);
+
+    strTmp.sprintf("amf1 count: %d", metadataTag->amf1Count.value);
+    QTreeWidgetItem *amf1CountItem = new QTreeWidgetItem(QStringList(strTmp));
+    setItemFLVPosition(amf1CountItem, &metadataTag->amf1Count.pos);
+    dataItem->addChild(amf1CountItem);
+
+    strTmp.sprintf("metadata");
+    QTreeWidgetItem *metaDataItem = new QTreeWidgetItem(QStringList(strTmp));
+    dataItem->addChild(metaDataItem);
+
+    MetadataInfo* pMeta = metadataTag->metaArray;
+    for(int i=0;i<metadataTag->amf1Count.value;i++)
+    {
+        MetadataInfo* metaKeyValue = pMeta->next;
+        if(metaKeyValue == NULL)
+            break;
+        if(metaKeyValue->valueType == AMF_NUMBER)
+        {
+            strTmp.sprintf("%s: %f", metaKeyValue->key.c_str(), metaKeyValue->dValue);
+        }
+        else if(metaKeyValue->valueType == AMF_STRING)
+        {
+            strTmp.sprintf("%s: %s", metaKeyValue->key.c_str(), metaKeyValue->strValue.c_str());
+        }
+        else if(metaKeyValue->valueType == AMF_BOOLEAN)
+        {
+            strTmp.sprintf("%s: %d", metaKeyValue->key.c_str(), metaKeyValue->bValue);
+        }
+
+        QTreeWidgetItem *keyValueItem = new QTreeWidgetItem(QStringList(strTmp));
+        keyValueItem->setToolTip(0, strTmp);
+        metaDataItem->addChild(keyValueItem);
+        pMeta = pMeta->next;
+    }
+}
+
+void flvParse::displayVideoDetail(QTreeWidgetItem* dataItem, FLVVideoTagBody* videoTag)
+{
+    QString strTmp;
+    strTmp.sprintf("Frame Type: %d", videoTag->frameType.value);
+    QTreeWidgetItem *frameTypeItem = new QTreeWidgetItem(QStringList(strTmp));
+    setItemFLVPosition(frameTypeItem, &videoTag->frameType.pos);
+    dataItem->addChild(frameTypeItem);
+
+    strTmp.sprintf("Codec ID: %d", videoTag->codecID.value);
+    QTreeWidgetItem *codecIDItem = new QTreeWidgetItem(QStringList(strTmp));
+    setItemFLVPosition(codecIDItem, &videoTag->codecID.pos);
+    dataItem->addChild(codecIDItem);
+
+    strTmp.sprintf("AVC Packet Type: %d", videoTag->avcPacketType.value);
+    QTreeWidgetItem *avcPacketTypeItem = new QTreeWidgetItem(QStringList(strTmp));
+    setItemFLVPosition(avcPacketTypeItem, &videoTag->avcPacketType.pos);
+    dataItem->addChild(avcPacketTypeItem);
+
+    strTmp.sprintf("Composition Time: %d", videoTag->compositionTime.value);
+    QTreeWidgetItem *compositionTimeItem = new QTreeWidgetItem(QStringList(strTmp));
+    setItemFLVPosition(compositionTimeItem, &videoTag->compositionTime.pos);
+    dataItem->addChild(compositionTimeItem);
 }
 
 void flvParse::displayFLVTags(QTreeWidgetItem* root)

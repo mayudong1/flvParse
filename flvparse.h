@@ -22,6 +22,8 @@ private:
 	void displayFLVHeader(QTreeWidgetItem* root);
 	void displayFLVTags(QTreeWidgetItem* root);
 	void displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag);
+    void displayMetadataDetail(QTreeWidgetItem* dataItem, FLVMetadataTagBody* metadataTag);
+    void displayVideoDetail(QTreeWidgetItem* dataItem, FLVVideoTagBody* videoTag);
 
 	void setHighlight(int start, int len);
 	void clearDisplay();
