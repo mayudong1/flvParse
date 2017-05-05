@@ -84,7 +84,7 @@ typedef struct MetadataInfo
     }
 }MetadataInfo;
 
-class FLVTagBody : public BaseStruct
+class FLVMetadataTagBody : public BaseStruct
 {
 public:
     FLVObject<char> amf0Type;
@@ -93,14 +93,14 @@ public:
     FLVObject<char> amf1Type;
     FLVObject<unsigned int> amf1Count;
     MetadataInfo* metaArray;
-    FLVTagBody()
+    FLVMetadataTagBody()
     {
         amf0Type.value = 0;
         amf1Type.value = 0;
         amf1Count.value = 0;
         metaArray = NULL;
     }
-    ~FLVTagBody()
+    ~FLVMetadataTagBody()
     {
         MetadataInfo* p = metaArray;
         while(p != NULL)
@@ -116,14 +116,20 @@ class FLVTag : public BaseStruct
 {
 public:
 	FLVTagHeader header;	
-	FLVTagBody data;
+    BaseStruct* data;
 	FLVObject<unsigned int> preTagSize;
     FLVTag* next;
 	FLVTag()
 	{	
 		preTagSize.value = 0;
+        data = NULL;
 		next = NULL;
 	}
+    ~FLVTag()
+    {
+        if(data)
+            delete data;
+    }
 };
 
 class FLVStruct : public BaseStruct
@@ -173,7 +179,7 @@ private:
 	int LoadFile(const char* fileName);
 	int parseFlvHeader();
 	int parseFlvTags();
-    int parseMetadata(FLVTagBody* meta);
+    int parseMetadata(FLVMetadataTagBody* meta);
 
 private:
 	bool ReadByte(char &value, FLVPosition& retPos);

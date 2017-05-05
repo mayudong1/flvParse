@@ -126,7 +126,7 @@ int FLVStructParse::parseFlvHeader()
 	return 0;
 }
 
-int FLVStructParse::parseMetadata(FLVTagBody* meta)
+int FLVStructParse::parseMetadata(FLVMetadataTagBody* meta)
 {
     ReadByte(meta->amf0Type.value, meta->amf0Type.pos);
 
@@ -258,11 +258,17 @@ int FLVStructParse::parseFlvTags()
         if(tag->header.type.value == 0x12)
         {
             int tmp = curIndex;
-            parseMetadata(&tag->data);
+            tag->data = new FLVMetadataTagBody();
+            parseMetadata((FLVMetadataTagBody*)tag->data);
             curIndex = tmp;
         }
+        else
+        {
+            tag->data = new BaseStruct();
+        }
+
 		Seek(tag->header.dataSize.value, pos);
-		tag->data.pos = pos;
+        tag->data->pos = pos;
 		tag->pos.len = curIndex - tag->pos.start;
 
 		if (!ReadUint32(tag->preTagSize.value, pos))
