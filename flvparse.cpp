@@ -221,6 +221,11 @@ void flvParse::displayVideoDetail(QTreeWidgetItem* dataItem, FLVVideoTagBody* vi
     QTreeWidgetItem *compositionTimeItem = new QTreeWidgetItem(QStringList(strTmp));
     setItemFLVPosition(compositionTimeItem, &videoTag->compositionTime.pos);
     dataItem->addChild(compositionTimeItem);
+
+    strTmp.sprintf("Video Data");
+    QTreeWidgetItem *videoDataItem = new QTreeWidgetItem(QStringList(strTmp));
+    setItemFLVPosition(videoDataItem, &videoTag->nalu.pos);
+    dataItem->addChild(videoDataItem);
 }
 
 void flvParse::displayFLVTags(QTreeWidgetItem* root)

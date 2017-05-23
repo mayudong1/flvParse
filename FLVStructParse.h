@@ -119,6 +119,7 @@ public:
     FLVObject<int> codecID;
     FLVObject<int> avcPacketType;
     FLVObject<unsigned int> compositionTime;
+    BaseStruct nalu;
 };
 
 class FLVTag : public BaseStruct
@@ -188,8 +189,8 @@ private:
 	int LoadFile(const char* fileName);
 	int parseFlvHeader();
 	int parseFlvTags();
-    int parseMetadata(FLVMetadataTagBody* meta);
-    int parseVideoTag(FLVVideoTagBody* videoTag);
+    int parseMetadata(FLVMetadataTagBody* meta, int len);
+    int parseVideoTag(FLVVideoTagBody* videoTag, int len);
 
 private:
 	bool ReadByte(char &value, FLVPosition& retPos);

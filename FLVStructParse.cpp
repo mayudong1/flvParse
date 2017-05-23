@@ -126,7 +126,7 @@ int FLVStructParse::parseFlvHeader()
 	return 0;
 }
 
-int FLVStructParse::parseMetadata(FLVMetadataTagBody* meta)
+int FLVStructParse::parseMetadata(FLVMetadataTagBody* meta, int len)
 {
     ReadByte(meta->amf0Type.value, meta->amf0Type.pos);
 
@@ -207,7 +207,7 @@ int FLVStructParse::parseMetadata(FLVMetadataTagBody* meta)
     return 0;
 }
 
-int FLVStructParse::parseVideoTag(FLVVideoTagBody* videoTag)
+int FLVStructParse::parseVideoTag(FLVVideoTagBody* videoTag, int len)
 {
     if(videoTag == NULL)
         return -1;
@@ -223,6 +223,8 @@ int FLVStructParse::parseVideoTag(FLVVideoTagBody* videoTag)
     videoTag->avcPacketType.value = value;
     videoTag->avcPacketType.pos = pos;
     ReadUint24(videoTag->compositionTime.value, videoTag->compositionTime.pos);
+    videoTag->nalu.pos.start = curIndex;
+    videoTag->nalu.pos.len = len-5;
     return 0;
 }
 
@@ -278,14 +280,14 @@ int FLVStructParse::parseFlvTags()
         {
             int tmp = curIndex;
             tag->data = new FLVMetadataTagBody();
-            parseMetadata((FLVMetadataTagBody*)tag->data);
+            parseMetadata((FLVMetadataTagBody*)tag->data, tag->header.dataSize.value);
             curIndex = tmp;
         }
         else if(tag->header.type.value == 0x09)
         {
             int tmp = curIndex;
             tag->data = new FLVVideoTagBody();
-            parseVideoTag((FLVVideoTagBody*)tag->data);
+            parseVideoTag((FLVVideoTagBody*)tag->data, tag->header.dataSize.value);
             curIndex = tmp;
         }
         else
