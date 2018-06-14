@@ -70,10 +70,18 @@ bool FLVStructParse::ReadUint16(unsigned int &value, FLVPosition& retPos)
 bool FLVStructParse::Seek(int len, FLVPosition& retPos)
 {
     if(curIndex + len > flv->dataLen)
-        return false;
-	retPos.start = curIndex;	
-    retPos.len = len;
-    curIndex += len;
+    {
+        retPos.start = curIndex;
+        retPos.len = flv->dataLen-curIndex;
+        curIndex += retPos.len;
+    }
+    else
+    {
+        retPos.start = curIndex;
+        retPos.len = len;
+        curIndex += len;
+    }
+
     return true;
 }
 
@@ -295,7 +303,7 @@ int FLVStructParse::parseFlvTags()
             tag->data = new BaseStruct();
         }
 
-		Seek(tag->header.dataSize.value, pos);
+        Seek(tag->header.dataSize.value, pos);
         tag->data->pos = pos;
 		tag->pos.len = curIndex - tag->pos.start;
 
@@ -303,6 +311,12 @@ int FLVStructParse::parseFlvTags()
 		{
 			break;
 		}
+
+        if(tag->preTagSize.value < 0)
+        {
+            break;
+        }
+
 		tag->preTagSize.pos = pos;		
 		p->next = tag;
 		p = p->next;
