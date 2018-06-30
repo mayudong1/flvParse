@@ -15,9 +15,33 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
+     <number>5</number>
+    </property>
     <item>
      <widget class="QWidget" name="widget" native="true">
       <layout class="QGridLayout" name="gridLayout">
+       <property name="leftMargin">
+        <number>5</number>
+       </property>
+       <property name="topMargin">
+        <number>5</number>
+       </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
+       <property name="bottomMargin">
+        <number>5</number>
+       </property>
        <item row="0" column="1">
         <widget class="QTextEdit" name="hexView">
          <property name="font">
@@ -104,22 +128,32 @@
    <addaction name="menuFile"/>
    <addaction name="menuDisplay"/>
   </widget>
+  <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
    </property>
   </action>
   <action name="actionVideo_Only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Video Only</string>
    </property>
   </action>
   <action name="actionAudio_Only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Audio Only</string>
    </property>
   </action>
   <action name="actionAll_Tags">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>All Tags</string>
    </property>

@@ -4,6 +4,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_flvparse.h"
 #include "FLVStructParse.h"
+#include <QLabel>
 
 #define SHOW_MORE_BYTES_PRE 128
 #define SHOW_MORE_BYTES_REAR 1024
@@ -53,6 +54,7 @@ private:
 
 private:
 	Ui::flvParseClass ui;
+    QLabel* statusLable;
 };
 
 #endif // FLVPARSE_H

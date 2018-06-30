@@ -1,5 +1,6 @@
 #include "flvparse.h"
 #include <QMessageBox>
+#include <QLabel>
 #include <qtextedit.h>
 #include <qtreewidget.h>
 #include <qtextcursor.h>
@@ -19,6 +20,9 @@ flvParse::flvParse(QWidget *parent)
 	curShowHexDataLen = 0;	
     ui.flvStructTree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui.flvStructTree->header()->setStretchLastSection(false);
+
+    statusLable = new QLabel("Ready", this);
+    this->ui.statusBar->addPermanentWidget(statusLable);
 }
 
 flvParse::~flvParse()
@@ -355,6 +359,11 @@ void flvParse::on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column)
     int highlightLen = FLV_MIN((curShowHexDataLen-highlightStart), pos->len);
 
 	setHighlight(highlightStart, highlightLen);
+
+    QString str;
+    str.sprintf("offset = %d, length = %d", pos->start, pos->len);
+    statusLable->setText(str);
+
 }
 
 void flvParse::on_actionOpen_triggered()
@@ -371,14 +380,27 @@ void flvParse::on_actionOpen_triggered()
 void flvParse::on_actionVideo_Only_triggered()
 {
     displayFLV(true, false);
+    this->ui.actionAudio_Only->setChecked(false);
+    this->ui.actionVideo_Only->setChecked(true);
+    this->ui.actionAll_Tags->setChecked(false);
+    this->ui.statusBar->showMessage("Show Video Tags Only");
 }
 
 void flvParse::on_actionAudio_Only_triggered()
 {
     displayFLV(false, true);
+    this->ui.actionAudio_Only->setChecked(true);
+    this->ui.actionVideo_Only->setChecked(false);
+    this->ui.actionAll_Tags->setChecked(false);
+    this->ui.statusBar->showMessage("Show Audio Tags Only");
+
 }
 
 void flvParse::on_actionAll_Tags_triggered()
 {
     displayFLV();
+    this->ui.actionAudio_Only->setChecked(false);
+    this->ui.actionVideo_Only->setChecked(false);
+    this->ui.actionAll_Tags->setChecked(true);
+    this->ui.statusBar->showMessage("Show All Tags");
 }
