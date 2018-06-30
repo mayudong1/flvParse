@@ -34,6 +34,9 @@ private:
 	void setItemFLVPosition(QTreeWidgetItem* item, FLVPosition* pos);
 	FLVPosition* getItemFLVPosition(QTreeWidgetItem* item);
 
+    void setItemTagData(QTreeWidgetItem* item, FLVTag* tag);
+    FLVTag* getItemTagData(QTreeWidgetItem* item);
+
 private slots:
 	void on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column);
 
@@ -44,6 +47,12 @@ private slots:
     void on_actionAudio_Only_triggered();
 
     void on_actionAll_Tags_triggered();
+
+    void on_actionKeyFrame_triggered();
+
+    void on_actionShowMetadata_triggered();
+
+    void on_actionShowVideoSequenceHeader_triggered();
 
 private:
 	FLVStruct* flv;

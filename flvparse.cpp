@@ -20,6 +20,7 @@ flvParse::flvParse(QWidget *parent)
 	curShowHexDataLen = 0;	
     ui.flvStructTree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui.flvStructTree->header()->setStretchLastSection(false);
+    ui.flvStructTree->setUniformRowHeights(true);
 
     statusLable = new QLabel("Ready", this);
     this->ui.statusBar->addPermanentWidget(statusLable);
@@ -67,6 +68,20 @@ FLVPosition* flvParse::getItemFLVPosition(QTreeWidgetItem* item)
 	QVariant value = item->data(0, Qt::UserRole);
 	pos = (FLVPosition*)value.value<void *>();
 	return pos;
+}
+
+void flvParse::setItemTagData(QTreeWidgetItem* item, FLVTag* tag)
+{
+    QVariant value = QVariant::fromValue((void *)tag);
+    item->setData(1, Qt::UserRole, value);
+}
+
+FLVTag* flvParse::getItemTagData(QTreeWidgetItem* item)
+{
+    FLVTag* tag = NULL;
+    QVariant value = item->data(1, Qt::UserRole);
+    tag = (FLVTag*)value.value<void *>();
+    return tag;
 }
 
 void flvParse::displayFLVHeader(QTreeWidgetItem* root)
@@ -268,6 +283,7 @@ void flvParse::displayFLVTags(QTreeWidgetItem* root, bool bShowVideo, bool bShow
 		}
 		QTreeWidgetItem *tagItem = new QTreeWidgetItem(QStringList(strTagType));
 		setItemFLVPosition(tagItem, &tag->pos);
+		setItemTagData(tagItem, tag);
 		root->addChild(tagItem);		
 
 		displayFLVTagDetail(tagItem, tag);
@@ -363,7 +379,6 @@ void flvParse::on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column)
     QString str;
     str.sprintf("offset = %d, length = %d", pos->start, pos->len);
     statusLable->setText(str);
-
 }
 
 void flvParse::on_actionOpen_triggered()
@@ -393,7 +408,6 @@ void flvParse::on_actionAudio_Only_triggered()
     this->ui.actionVideo_Only->setChecked(false);
     this->ui.actionAll_Tags->setChecked(false);
     this->ui.statusBar->showMessage("Show Audio Tags Only");
-
 }
 
 void flvParse::on_actionAll_Tags_triggered()
@@ -403,4 +417,61 @@ void flvParse::on_actionAll_Tags_triggered()
     this->ui.actionVideo_Only->setChecked(false);
     this->ui.actionAll_Tags->setChecked(true);
     this->ui.statusBar->showMessage("Show All Tags");
+}
+
+void flvParse::on_actionKeyFrame_triggered()
+{
+    ui.flvStructTree->hide();
+    QTreeWidgetItem* root = ui.flvStructTree->topLevelItem(0);
+    for(int i=0; i<root->childCount(); i++)
+    {
+        QTreeWidgetItem* item = root->child(i);
+        FLVTag* tag = getItemTagData(item);
+        if(tag == NULL)
+            continue;
+        if(tag->header.type.value == 9
+                && ((FLVVideoTagBody*)(tag->data))->frameType.value == 1
+                && ((FLVVideoTagBody*)(tag->data))->avcPacketType.value == 1
+                )
+        {
+            item->setBackgroundColor(0, Qt::yellow);
+        }
+    }
+    ui.flvStructTree->show();
+}
+
+void flvParse::on_actionShowMetadata_triggered()
+{
+    ui.flvStructTree->hide();
+    QTreeWidgetItem* root = ui.flvStructTree->topLevelItem(0);
+    for(int i=0; i<root->childCount(); i++)
+    {
+        QTreeWidgetItem* item = root->child(i);
+        FLVTag* tag = getItemTagData(item);
+        if(tag == NULL)
+            continue;
+        if(tag->header.type.value == 18)
+        {
+            item->setBackgroundColor(0, Qt::yellow);
+        }
+    }
+    ui.flvStructTree->show();
+}
+
+void flvParse::on_actionShowVideoSequenceHeader_triggered()
+{
+    ui.flvStructTree->hide();
+    QTreeWidgetItem* root = ui.flvStructTree->topLevelItem(0);
+    for(int i=0; i<root->childCount(); i++)
+    {
+        QTreeWidgetItem* item = root->child(i);
+        FLVTag* tag = getItemTagData(item);
+        if(tag == NULL)
+            continue;
+        if(tag->header.type.value == 9 && ((FLVVideoTagBody*)(tag->data))->avcPacketType.value == 0)
+        {
+            item->setBackgroundColor(0, Qt::yellow);
+        }
+    }
+    ui.flvStructTree->show();
 }

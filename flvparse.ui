@@ -124,6 +124,10 @@
     <addaction name="actionAll_Tags"/>
     <addaction name="actionVideo_Only"/>
     <addaction name="actionAudio_Only"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowMetadata"/>
+    <addaction name="actionShowVideoSequenceHeader"/>
+    <addaction name="actionKeyFrame"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuDisplay"/>
@@ -156,6 +160,21 @@
    </property>
    <property name="text">
     <string>All Tags</string>
+   </property>
+  </action>
+  <action name="actionKeyFrame">
+   <property name="text">
+    <string>ShowKeyFrame</string>
+   </property>
+  </action>
+  <action name="actionShowMetadata">
+   <property name="text">
+    <string>ShowMetadata</string>
+   </property>
+  </action>
+  <action name="actionShowVideoSequenceHeader">
+   <property name="text">
+    <string>ShowVideoSequenceHeader</string>
    </property>
   </action>
  </widget>
