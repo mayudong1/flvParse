@@ -17,10 +17,11 @@ public:
 	flvParse(QWidget *parent = 0);
 	~flvParse();
 private:
-	void displayFLV(QString fileName);
-	void displayHex(unsigned char* pData, int& len);
+    void displayFLV(QString fileName);
+    void displayFLV(bool bShowVideo = true, bool bShowAudio = true);
+    void displayHex(unsigned char* pData, int& len);
 	void displayFLVHeader(QTreeWidgetItem* root);
-	void displayFLVTags(QTreeWidgetItem* root);
+    void displayFLVTags(QTreeWidgetItem* root, bool bShowVideo = true, bool bShowAudio = true);
 	void displayFLVTagDetail(QTreeWidgetItem* tagItem, FLVTag* tag);
     void displayMetadataDetail(QTreeWidgetItem* dataItem, FLVMetadataTagBody* metadataTag);
     void displayVideoDetail(QTreeWidgetItem* dataItem, FLVVideoTagBody* videoTag);
@@ -33,8 +34,15 @@ private:
 	FLVPosition* getItemFLVPosition(QTreeWidgetItem* item);
 
 private slots:
-	void on_openButton_clicked();			
 	void on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column);
+
+    void on_actionOpen_triggered();
+
+    void on_actionVideo_Only_triggered();
+
+    void on_actionAudio_Only_triggered();
+
+    void on_actionAll_Tags_triggered();
 
 private:
 	FLVStruct* flv;

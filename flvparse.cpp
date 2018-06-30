@@ -228,7 +228,7 @@ void flvParse::displayVideoDetail(QTreeWidgetItem* dataItem, FLVVideoTagBody* vi
     dataItem->addChild(videoDataItem);
 }
 
-void flvParse::displayFLVTags(QTreeWidgetItem* root)
+void flvParse::displayFLVTags(QTreeWidgetItem* root, bool bShowVideo, bool bShowAudio)
 {
 	QString strTmp;
 
@@ -241,9 +241,19 @@ void flvParse::displayFLVTags(QTreeWidgetItem* root)
 		switch (tag->header.type.value)
 		{
 		case 8:
+            if(!bShowAudio)
+            {
+                tag = tag->next;
+                continue;
+            }
 			strTagType.sprintf("Audio Tag%d", audioIndex++);
 			break;
 		case 9:
+            if(!bShowVideo)
+            {
+                tag = tag->next;
+                continue;
+            }
 			strTagType.sprintf("Video Tag%d", videoIndex++);
 			break;
 		case 18:
@@ -268,8 +278,6 @@ void flvParse::displayFLVTags(QTreeWidgetItem* root)
 
 void flvParse::displayFLV(QString fileName)
 {	
-	clearDisplay();
-
 	flv = parser->parseFile(fileName.toStdString().c_str());
 	if (flv == NULL)
 	{		
@@ -277,15 +285,24 @@ void flvParse::displayFLV(QString fileName)
 		return;
 	}		
 
-	QTreeWidget* tree = this->ui.flvStructTree;
-	QTreeWidgetItem *root = new QTreeWidgetItem(QStringList("FLVStruct"));
-	tree->addTopLevelItem(root);
-	root->setExpanded(true);
+    displayFLV();
+}
 
-	curShowHexDataLen = 1024;
-	displayHex(flv->data, curShowHexDataLen);
-	displayFLVHeader(root);
-	displayFLVTags(root);
+void flvParse::displayFLV(bool bShowVideo, bool bShowAudio)
+{
+    if(flv == NULL)
+        return;
+
+    clearDisplay();
+    QTreeWidget* tree = this->ui.flvStructTree;
+    QTreeWidgetItem *root = new QTreeWidgetItem(QStringList("FLVStruct"));
+    tree->addTopLevelItem(root);
+    root->setExpanded(true);
+
+    curShowHexDataLen = 1024;
+    displayHex(flv->data, curShowHexDataLen);
+    displayFLVHeader(root);
+    displayFLVTags(root, bShowVideo, bShowAudio);
 }
 
 void flvParse::setHighlight(int start, int len)
@@ -340,14 +357,28 @@ void flvParse::on_flvStructTree_itemClicked(QTreeWidgetItem * item, int column)
 	setHighlight(highlightStart, highlightLen);
 }
 
-void flvParse::on_openButton_clicked()
-{	
-	QFileDialog *dlg = new QFileDialog(this);
-	if (dlg->exec() == QFileDialog::Accepted)
-	{
-		QStringList files = dlg->selectedFiles();
-		QString fileName = files.at(0);		
-		this->ui.filePathEdit->setText(fileName);
-		displayFLV(fileName);
-	}
+void flvParse::on_actionOpen_triggered()
+{
+    QFileDialog *dlg = new QFileDialog(this);
+    if (dlg->exec() == QFileDialog::Accepted)
+    {
+        QStringList files = dlg->selectedFiles();
+        QString fileName = files.at(0);
+        displayFLV(fileName);
+    }
+}
+
+void flvParse::on_actionVideo_Only_triggered()
+{
+    displayFLV(true, false);
+}
+
+void flvParse::on_actionAudio_Only_triggered()
+{
+    displayFLV(false, true);
+}
+
+void flvParse::on_actionAll_Tags_triggered()
+{
+    displayFLV();
 }
