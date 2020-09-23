@@ -6,6 +6,7 @@
 #include <qtextcursor.h>
 #include <qfiledialog.h>
 #include <QtGlobal>  
+#include <QFontDatabase>
 
 #include "Util.h"
 #include "FLVStructParse.h"
@@ -14,6 +15,10 @@ flvParse::flvParse(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
+    QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+    fixedFont.setPointSize(14);
+    ui.hexView->setFont(fixedFont);
+
 	flv = NULL;
 	parser = new FLVStructParse();
 	curShowHexDataStartInFLV = 0;
